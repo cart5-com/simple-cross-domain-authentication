@@ -7,10 +7,26 @@ This is a monorepo for a simple cross-domain authentication example.
 
 - ✅ Cross-domain authentication
 - ✅ One-time password (OTP) authentication
-- ✅ CSRF protection
-- ✅ Secure session management
 - ✅ Cloudflare Turnstile integration
 - ✅ Email verification
+
+## Basic Flow for cross-domain auth
+
+1. User visits Store Site (e.g., sample-store-1.com)
+
+   - User clicks "Login" button
+   - Gets redirected to auth.cart5dev.com with return URL
+
+2. On Auth Site (auth.cart5dev.com)
+
+   - User logs in using OTP (one-time password)
+   - After successful login, initiates cross-domain auth process
+
+3. Cross-Domain Authentication
+   - Creates temporary session
+   - Encrypts session data
+   - Redirects back to store with encrypted data
+   - Store website validates and creates its own session
 
 ## Architecture
 
