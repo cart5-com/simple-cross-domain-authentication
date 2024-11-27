@@ -29,14 +29,13 @@ app.onError((err, c) => {
 	if (err instanceof KNOWN_ERROR) {
 		console.log("KNOWN_ERROR err:");
 		console.log(err);
-		// ignore senty capture
+		// TODO: add sentry
 		c.error = undefined;
 		return c.json({
 			error: {
 				message: err.message,
 				code: err.code
 			},
-			// data: null
 		}, 500);
 	} else {
 		// this is same with hono's own error handler. 
@@ -49,7 +48,6 @@ app.onError((err, c) => {
 			error: {
 				message: "Internal Server Error"
 			},
-			// data: null
 		}, 503);
 	}
 })

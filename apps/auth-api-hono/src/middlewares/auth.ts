@@ -13,13 +13,6 @@ export const authChecks = createMiddleware(async (c, next) => {
         const hostname = c.req.header('Host');
         const { user, session } = await validateSessionCookie(cookieValue, hostname!);
         if (session && session.fresh) {
-            // c.header("Set-Cookie", serializeCookie(SESSION_COOKIE_NAME, cookieValue, {
-            //     httpOnly: true,
-            //     path: "/",
-            //     secure: true, // using https in dev with caddy
-            //     sameSite: "strict",
-            //     expires: session.expiresAt
-            // }), { append: true });
             setCookie(c, SESSION_COOKIE_NAME, cookieValue, {
                 path: "/",
                 secure: true, // using https in dev with caddy
@@ -29,13 +22,6 @@ export const authChecks = createMiddleware(async (c, next) => {
             });
         }
         if (!session) {
-            // c.header("Set-Cookie", serializeCookie(SESSION_COOKIE_NAME, "", {
-            //     httpOnly: true,
-            //     path: "/",
-            //     secure: true, // using https in dev with caddy
-            //     sameSite: "strict",
-            //     maxAge: 0,
-            // }), { append: true });
             setCookie(c, SESSION_COOKIE_NAME, "", {
                 path: "/",
                 secure: true, // using https in dev with caddy

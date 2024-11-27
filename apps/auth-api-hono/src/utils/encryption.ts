@@ -1,8 +1,8 @@
 import { getEnvironmentVariable } from "./getEnvironmentVariable";
-// check environment variable
 const key = getEnvironmentVariable("ENCRYPTION_KEY");
 
-const IV_LENGTH = 16; // Updated to 16 bytes
+const IV_LENGTH = 16;
+
 async function importKeyFromBase64(base64Key: string): Promise<CryptoKey> {
 	const rawKey = base64ToUint8Array(base64Key);
 	if (rawKey.length !== 32) {
@@ -52,7 +52,6 @@ export const decrypt = async (encryptedText: string, base64Key: string): Promise
 	return new TextDecoder().decode(decryptedBuffer);
 };
 
-// Helper functions for Base64 encoding/decoding
 function uint8ArrayToBase64(array: Uint8Array): string {
 	return btoa(String.fromCharCode.apply(null, array as unknown as number[]));
 }

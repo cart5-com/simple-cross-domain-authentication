@@ -37,7 +37,7 @@ export const otpRoute = new Hono<honoTypes>()
                 {
                     email: verifyEmail,
                     otp,
-                    exp: Math.floor(Date.now() / 1000) + 600, // Token expires in 10 minutes
+                    exp: Math.floor(Date.now() / 1000) + 600, //  expires in 10 minutes
                 },
                 getEnvironmentVariable("JWT_SECRET"),
                 getEnvironmentVariable("ENCRYPTION_KEY")

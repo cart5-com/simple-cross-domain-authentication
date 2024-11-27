@@ -5,7 +5,7 @@ const client = createAuthApiClient();
 const form = document.getElementById("otp-form") as HTMLFormElement;
 form?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    // get form data
+
     const formData = new FormData(form);
     const verifyEmail = formData.get("verifyEmail") as string;
     const code = formData.get("code") as string;
@@ -40,11 +40,6 @@ form?.addEventListener("submit", async (e) => {
         }
     }
 });
-
-// const tomorrow = new Date();
-// tomorrow.setDate(tomorrow.getDate() + 1);
-// tomorrow.getTime();
-
 
 const whoAmI = async () => {
     const { data, error } = await (await client.api.user.whoami.$post()).json();

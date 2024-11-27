@@ -1,4 +1,3 @@
-// it is only type so it is not necessary to import the whole auth-api-hono app here
 import type { AuthAppType } from '../index'
 import { hc } from 'hono/client'
 import type { InferRequestType, InferResponseType } from 'hono/client'

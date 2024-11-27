@@ -1,5 +1,8 @@
 
-export const showTurnstile = async function (sitekey: string): Promise<string> {
+export const showTurnstile = async function (sitekey: string, containerElement?: HTMLElement): Promise<string> {
+    if (!containerElement) {
+        containerElement = document.body;
+    }
     const tryShowTurnstile = async (): Promise<string> => {
         return new Promise(async (resolve, reject) => {
             const randomId = `turnstile${(Math.floor(Math.random() * 1e15)).toString(36)}`;
@@ -13,7 +16,7 @@ export const showTurnstile = async function (sitekey: string): Promise<string> {
 
             const container = document.createElement('div');
             container.innerHTML = turnstileHtml;
-            document.body.appendChild(container);
+            containerElement.appendChild(container);
 
             (window as any)[randomId] = function () {
                 try {
@@ -23,7 +26,7 @@ export const showTurnstile = async function (sitekey: string): Promise<string> {
                             "error-callback": function (error: any) {
                                 console.log("error window.turnstile.render");
                                 console.log(error);
-                                document.body.removeChild(container);
+                                containerElement.removeChild(container);
                                 if (error.toString() === "300030") {
                                     // Error 300030 is generic Client Execution Error.
                                     // Retry on 300030 error
@@ -33,7 +36,7 @@ export const showTurnstile = async function (sitekey: string): Promise<string> {
                                 }
                             },
                             callback: function (token: string) {
-                                document.body.removeChild(container);
+                                containerElement.removeChild(container);
                                 resolve(token);
                             },
                         });
@@ -41,7 +44,7 @@ export const showTurnstile = async function (sitekey: string): Promise<string> {
                 } catch (e) {
                     console.log("error window.turnstile.render");
                     console.log(e);
-                    document.body.removeChild(container);
+                    containerElement.removeChild(container);
                     reject(e);
                 }
             };

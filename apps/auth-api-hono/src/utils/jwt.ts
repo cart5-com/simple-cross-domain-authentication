@@ -3,14 +3,13 @@ import { type JWTPayload } from "hono/utils/jwt/types";
 import { decrypt, encrypt } from './encryption';
 import { KNOWN_ERROR } from '../errors';
 import { getEnvironmentVariable } from "./getEnvironmentVariable";
-// check environment variable
 const key = getEnvironmentVariable("JWT_SECRET");
 
 export const signJWT = (payloadParam: JWTPayload, JWT_SECRET: string) => {
     if (!payloadParam.hasOwnProperty("exp")) {
         const payload: JWTPayload = {
             ...payloadParam,
-            exp: Math.floor(Date.now() / 1000) + 600, // Token expires in 10 minutes
+            exp: Math.floor(Date.now() / 1000) + 600, //  default: expires in 10 minutes
         };
         return sign(payload, JWT_SECRET);
     } else {
