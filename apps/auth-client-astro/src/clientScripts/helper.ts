@@ -48,8 +48,11 @@ form?.addEventListener("submit", async (e) => {
 
 const winUri = new URL(window.location.href);
 const redirect = decodeURIComponent(winUri.searchParams.get('redirect') || "");
-
 const redirectButton = document.getElementById("redirect-button") as HTMLButtonElement;
+if (redirect) {
+    const redirectUrl = new URL(redirect);
+    redirectButton.innerHTML = `Continue to <strong>${redirectUrl.host}</strong> ▶️`;
+}
 redirectButton.addEventListener("click", async () => {
     if (!redirect) {
         alert("redirect is not found");
