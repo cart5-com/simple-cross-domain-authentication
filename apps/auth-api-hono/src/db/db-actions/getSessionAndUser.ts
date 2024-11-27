@@ -3,7 +3,6 @@ import type { Session } from "../../types/SessionType";
 import type { User } from "../../types/UserType";
 import db from "../drizzle";
 import { sessionTable, userTable } from "../schema";
-import isWithinExpirationDate from "../../utils/isWithinExpirationDate";
 
 export const getSessionAndUser = async (
     sessionId: string

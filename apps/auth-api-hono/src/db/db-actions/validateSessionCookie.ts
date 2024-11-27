@@ -1,10 +1,9 @@
-import { SESSION_ACTIVE_PERIOD_EXPIRATION_IN, SESSION_EXPIRES_IN } from "../consts";
-import deleteSession from "../db/dbUtils/deleteSession";
-import { getSessionAndUser } from "../db/dbUtils/getSessionAndUser";
-import updateSessionExpiration from "../db/dbUtils/updateSessionExpiration";
-import type { Session } from "../types/SessionType";
-import type { User } from "../types/UserType";
-import isWithinExpirationDate from "../utils/isWithinExpirationDate";
+import { SESSION_ACTIVE_PERIOD_EXPIRATION_IN, SESSION_EXPIRES_IN } from "../../consts";
+import deleteSession from "./deleteSession";
+import { getSessionAndUser } from "./getSessionAndUser";
+import updateSessionExpiration from "./updateSessionExpiration";
+import type { Session } from "../../types/SessionType";
+import type { User } from "../../types/UserType";
 import { encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
 
@@ -45,4 +44,8 @@ export const validateSessionCookie = async (
         await updateSessionExpiration(databaseSession.id, session.expiresAt);
     }
     return { user: databaseUser, session };
+}
+
+function isWithinExpirationDate(date: Date): boolean {
+    return Date.now() < date.getTime();
 }

@@ -1,4 +1,4 @@
-import type { AuthAppType } from '../index'
+import type { AuthAppType } from './index'
 import { hc } from 'hono/client'
 import type { InferRequestType, InferResponseType } from 'hono/client'
 

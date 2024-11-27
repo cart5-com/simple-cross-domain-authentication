@@ -1,4 +1,4 @@
-import { createAuthApiClient } from "../../../auth-api-hono/src/export/authApiClient";
+import { createAuthApiClient } from "../../../auth-api-hono/src/authApiClient";
 // this only provides the hono/client with typing
 // https://hono.dev/docs/guides/rpc
 // it does not include any server code, 

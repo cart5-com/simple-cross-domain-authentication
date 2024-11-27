@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import { createAuthApiClient } from '../../../auth-api-hono/src/export/authApiClient'
+import { createAuthApiClient } from '../../../auth-api-hono/src/authApiClient'
 
 export const authMiddleware = defineMiddleware(async (context, next) => {
     const authApiClient = createAuthApiClient(`${context.url.origin}/__p_auth/`);

@@ -5,13 +5,13 @@ import { z } from 'zod';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { KNOWN_ERROR } from '../errors';
 import { isKnownHostname } from '../utils/knownHostnames';
-import { createSession } from '../db/dbUtils/createSession';
+import { createSession } from '../db/db-actions/createSession';
 import { generateSessionToken } from '../utils/generateSessionToken';
 import { CROSS_DOMAIN_SESSION_EXPIRES_IN, SESSION_COOKIE_NAME } from '../consts';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
-import { validateSessionCookie } from '../session/validateSessionCookie';
-import deleteSession from '../db/dbUtils/deleteSession';
+import { validateSessionCookie } from '../db/db-actions/validateSessionCookie';
+import deleteSession from '../db/db-actions/deleteSession';
 import { setCookie } from 'hono/cookie';
 
 /**
@@ -81,6 +81,7 @@ export const crossDomainRoute = new Hono<honoTypes>()
     )
     .get(
         '/callback',
+        // this is the callback url from the target domain, we use proxy to get the request here.
         // Validate query parameters - require code and redirectUrl
         zValidator('query', z.object({
             code: z.string().min(1, { message: "code required" }),
@@ -153,7 +154,7 @@ export const crossDomainRoute = new Hono<honoTypes>()
  */
 const getCrossDomainCallbackUrl = (code: string, redirectUrl: string) => {
     const url = new URL(redirectUrl);
-    // import { createAuthApiClient } from '../export/authApiClient'
+    // import { createAuthApiClient } from '../authApiClient'
     // const authApiClient = createAuthApiClient(`${url.origin}/__p_auth/`);
     // const goToUrl = new URL(authApiClient.api.cross_domain.callback.$url());
     const goToUrl = new URL(`${url.origin}/__p_auth/api/cross_domain/callback`);

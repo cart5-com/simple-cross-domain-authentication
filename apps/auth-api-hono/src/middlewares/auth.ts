@@ -1,7 +1,7 @@
 import { getCookie, setCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { SESSION_COOKIE_NAME } from "../consts";
-import { validateSessionCookie } from "../session/validateSessionCookie";
+import { validateSessionCookie } from "../db/db-actions/validateSessionCookie";
 
 export const authChecks = createMiddleware(async (c, next) => {
     const cookieValue = getCookie(c, SESSION_COOKIE_NAME) ?? null;

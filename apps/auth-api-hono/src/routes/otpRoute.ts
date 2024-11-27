@@ -10,9 +10,9 @@ import { sendUserOtpEmail } from '../utils/email';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { KNOWN_ERROR } from '../errors';
-import { upsertUser } from '../db/dbUtils/upsertUser';
+import { upsertUser } from '../db/db-actions/upsertUser';
 import { generateSessionToken } from '../utils/generateSessionToken';
-import { createSession } from '../db/dbUtils/createSession';
+import { createSession } from '../db/db-actions/createSession';
 
 export const otpRoute = new Hono<honoTypes>()
     .use(async (c, next) => {

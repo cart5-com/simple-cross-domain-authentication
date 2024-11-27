@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import type { honoTypes } from '../index'
-import deleteSession from '../db/dbUtils/deleteSession';
+import deleteSession from '../db/db-actions/deleteSession';
 import { SESSION_COOKIE_NAME } from '../consts';
 import { setCookie } from 'hono/cookie';
 
