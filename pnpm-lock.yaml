@@ -77,6 +77,18 @@ importers:
 
   apps/proxy-caddy: {}
 
+  apps/web-store-ssr-astro:
+    dependencies:
+      '@astrojs/check':
+        specifier: ^0.9.4
+        version: 0.9.4(prettier@3.4.1)(typescript@5.7.2)
+      astro:
+        specifier: ^4.16.15
+        version: 4.16.15(@types/node@22.10.0)(rollup@4.27.4)(typescript@5.7.2)
+      typescript:
+        specifier: ^5.7.2
+        version: 5.7.2
+
 packages:
 
   '@ampproject/remapping@2.3.0':

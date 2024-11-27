@@ -22,14 +22,11 @@ https://auth.{$PUBLIC_DOMAIN_NAME} {
 sample-store-1.com,
 sample-store-2.com,
 unknown-store.com,
-www.sample-store-1.com,
-www.sample-store-2.com,
-www.unknown-store.com,
 :443 {
 	tls internal
 	import auth-api-hono-proxy
 	handle_path /* {
-		#store-astro-ssr
+		#web-store-ssr-astro
 		reverse_proxy http://localhost:3002
 	}
 }
