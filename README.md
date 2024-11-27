@@ -48,7 +48,7 @@ This is a monorepo for a simple cross-domain authentication example.
 - **Frontend**: Astro (SSG & SSR)
 - **Backend**: Hono (TypeScript)
 - **Database**: SQLite with Drizzle ORM
-- **Proxy**: Caddy for local development
+- **Proxy**: Caddy for local development (yes, I do not like dealing with CORS issues)
 
 ## Project Structure
 
