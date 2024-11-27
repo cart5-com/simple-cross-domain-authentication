@@ -5,5 +5,9 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
     vite: {
         envDir: "../../",
+        build: {
+            // sourcemap: true,
+            minify: false,
+        }
     }
 });

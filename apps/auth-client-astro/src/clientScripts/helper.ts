@@ -1,4 +1,9 @@
 import { createAuthApiClient } from "../../../auth-api-hono/src/export/authApiClient";
+// this only provides the hono/client with typing
+// https://hono.dev/docs/guides/rpc
+// it does not include any server code, 
+// run pnpm build to see the generated codes, (astro.config.vite.build.minify=false)
+
 import { showTurnstile } from "./turnstile";
 const client = createAuthApiClient();
 
