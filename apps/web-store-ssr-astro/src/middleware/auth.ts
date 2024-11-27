@@ -15,10 +15,14 @@ export const authMiddleware = defineMiddleware(async (context, next) => {
             cookie: context.request.headers.get("cookie") ?? ""
         }
     });
-    const whoamiData = await whoamiResponse.json();
-    if (whoamiData.data) {
-        context.locals.USER = whoamiData.data;
-    } else {
+    try {
+        const whoamiData = await whoamiResponse.json();
+        if (whoamiData.data) {
+            context.locals.USER = whoamiData.data;
+        } else {
+            context.locals.USER = null;
+        }
+    } catch (e) {
         context.locals.USER = null;
     }
     const response = await next();
