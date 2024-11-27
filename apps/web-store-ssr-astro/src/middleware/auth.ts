@@ -23,6 +23,7 @@ export const authMiddleware = defineMiddleware(async (context, next) => {
             context.locals.USER = null;
         }
     } catch (e) {
+        console.error(e);
         context.locals.USER = null;
     }
     const response = await next();

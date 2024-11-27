@@ -1,11 +1,7 @@
-# simple-cross-domain-authentication monorepo
+# Simple Cross-Domain Authentication Monorepo
 
 This is a monorepo for a simple cross-domain authentication example.
 (used auth sample from lucia-auth by pilcrowonpaper.com)
-
-# Simple Cross-Domain Authentication Monorepo
-
-A demonstration of cross-domain authentication implementation using modern web technologies. This project showcases secure authentication patterns across multiple domains.
 
 ## Features
 
