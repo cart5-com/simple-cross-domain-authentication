@@ -1,0 +1,35 @@
+(auth-api-hono-proxy) {
+	handle_path /__p_auth/* {
+		#auth-api-hono
+		reverse_proxy http://localhost:3000
+	}
+}
+
+# redirect to HTTPS
+:80 {
+	redir https://{host}{uri}
+}
+
+https://auth.{$PUBLIC_DOMAIN_NAME} {
+	tls internal
+	import auth-api-hono-proxy
+	handle_path /* {
+		#auth-client-astro
+		reverse_proxy http://localhost:3001
+	}
+}
+
+sample-store-1.com,
+sample-store-2.com,
+unknown-store.com,
+www.sample-store-1.com,
+www.sample-store-2.com,
+www.unknown-store.com,
+:443 {
+	tls internal
+	import auth-api-hono-proxy
+	handle_path /* {
+		#store-astro-ssr
+		reverse_proxy http://localhost:3002
+	}
+}

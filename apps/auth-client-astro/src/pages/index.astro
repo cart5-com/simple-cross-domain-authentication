@@ -1,0 +1,33 @@
+---
+
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Auth Client</title>
+	</head>
+	<body>
+		<h1>Auth Client</h1>
+		<form class="hidden" id="otp-form">
+			<input type="text" name="verifyEmail" value="test@test.com" />
+			<br />
+			<input type="hidden" name="code" />
+			<br />
+			<button type="submit">Send</button>
+		</form>
+		<hr />
+		<button id="whoami-button">Who am I</button>
+		<pre id="whoami-result"></pre>
+		<hr />
+		<button class="hidden" id="logout-button">Logout</button>
+		<script src="../clientScripts/helper.ts"></script>
+		<style>
+			.hidden {
+				display: none;
+			}
+		</style>
+	</body>
+</html>

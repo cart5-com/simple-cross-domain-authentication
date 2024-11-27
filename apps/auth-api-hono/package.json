@@ -1,0 +1,26 @@
+{
+	"name": "auth-api-hono",
+	"type": "module",
+	"scripts": {
+		"dev": "drizzle-kit studio --port=7022 --config=./drizzle.config.ts & pnpm dev:hono",
+		"dev:hono": "dotenv -e ../../.env -- tsx watch src/index.ts",
+		"postdev": "kill $(lsof -t -i:7022)",
+		"generate:sql": "dotenv -e ../../.env -- drizzle-kit generate --config=drizzle.config.ts",
+		"build": "rm -rf ./dist && node ./esbuild.cjs",
+		"preview": "dotenv -e ../../.env.prod -- bash -c 'node ./dist/index.js'"
+	},
+	"dependencies": {
+		"@hono/node-server": "^1.13.7",
+		"@hono/zod-validator": "^0.4.1",
+		"@libsql/client": "^0.14.0",
+		"@types/node": "^22.9.1",
+		"drizzle-kit": "^0.28.1",
+		"drizzle-orm": "^0.36.4",
+		"esbuild": "^0.24.0",
+		"@oslojs/crypto": "^0.6.0",
+		"@oslojs/encoding": "1.1.0",
+		"hono": "^4.6.11",
+		"tsx": "^4.19.2",
+		"zod": "^3.23.8"
+	}
+}

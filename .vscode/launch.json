@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "command": "pnpm dev",
+      "name": "turbo-dev",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    /*/
+    pnpm dev works now. no need to have these
+    {
+      "command": "cd ./apps/api-hono && dotenv -e ./.env -- ./node_modules/.bin/tsx watch src/index.ts",
+      "name": "api-hono",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "cd ./apps/web-astro && ./node_modules/.bin/astro dev --port 5000",
+      "name": "web-astro",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    /*/
+  ]
+}

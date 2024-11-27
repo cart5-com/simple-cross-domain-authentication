@@ -1,0 +1,22 @@
+{
+  "name": "simple-cross-domain-authentication",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "turbo build",
+    "dev": "turbo dev --ui=stream",
+    "generate:sql": "cd apps/auth-api-hono && pnpm generate:sql",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "typescript": "^5.7.2",
+    "@types/node": "^22.9.1",
+    "dotenv-cli": "^7.4.4",
+    "turbo": "^2.3.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}

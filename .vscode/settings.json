@@ -1,0 +1,16 @@
+{
+  "html.format.wrapAttributes": "force-aligned",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.formatOnSaveMode": "file",
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false, // filter: !**/node_modules/**
+  "css.validate": false,
+  "tailwindCSS.includeLanguages": {
+    "vue": "html",
+    "javascript": "javascript"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}

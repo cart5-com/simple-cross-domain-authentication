@@ -1,0 +1,7 @@
+{
+  "name": "proxy-caddy",
+  "scripts": {
+    "dev": "pnpm format && dotenv -e ../../.env -- caddy run --config ./Caddyfile_dev",
+    "format": "caddy fmt ./Caddyfile_dev  --overwrite"
+  }
+}

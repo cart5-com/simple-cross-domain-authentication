@@ -1,0 +1,5 @@
+# Query: 
+# Flags: IgnoreExcludeSettings
+# Excluding: **/node_modules/**, **/.turbo/**, **/dist/**, **/.astro/**, **/.wrangler/**, .git/**, .nuxt/**
+# ContextLines: 1
+
