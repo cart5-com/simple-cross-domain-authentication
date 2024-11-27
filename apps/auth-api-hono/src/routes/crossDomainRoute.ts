@@ -59,7 +59,6 @@ export const crossDomainRoute = new Hono<honoTypes>()
                     sessionToken,
                     sessionId: session.id,
                     turnstile,
-                    exp: Math.floor(Date.now() / 1000) + 600, //  expires in 10 minutes
                 },
                 getEnvironmentVariable("JWT_SECRET"),
                 getEnvironmentVariable("ENCRYPTION_KEY")
