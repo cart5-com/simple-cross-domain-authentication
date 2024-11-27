@@ -1,7 +1,7 @@
 # simple-cross-domain-authentication monorepo
 
 This is a monorepo(turborepo) for a simple cross-domain authentication example.
-learned from [lucia-auth](https://lucia-auth.com/).
+learned from <a href="https://lucia-auth.com/" target="_blank">lucia-auth</a>.
 
 ## Requirements for local development
 
