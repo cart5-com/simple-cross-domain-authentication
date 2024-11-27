@@ -5,7 +5,7 @@ import { createAuthApiClient } from "../../../auth-api-hono/src/export/authApiCl
 // run pnpm build to see the generated codes, (astro.config.vite.build.minify=false)
 
 import { showTurnstile } from "./turnstile";
-const client = createAuthApiClient();
+const authApiClient = createAuthApiClient(`${window.location.origin}/__p_auth/`);
 
 const form = document.getElementById("otp-form") as HTMLFormElement;
 form?.addEventListener("submit", async (e) => {
@@ -16,7 +16,7 @@ form?.addEventListener("submit", async (e) => {
     const code = formData.get("code") as string;
     let req;
     if (code) {
-        req = client.api.otp.verify.$post({
+        req = authApiClient.api.otp.verify.$post({
             form: {
                 verifyEmail,
                 code,
@@ -24,7 +24,7 @@ form?.addEventListener("submit", async (e) => {
             },
         });
     } else {
-        req = client.api.otp.otp.$post({
+        req = authApiClient.api.otp.otp.$post({
             form: {
                 verifyEmail,
                 turnstile: await showTurnstile(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY)
@@ -46,13 +46,40 @@ form?.addEventListener("submit", async (e) => {
     }
 });
 
+const winUri = new URL(window.location.href);
+const redirect = decodeURIComponent(winUri.searchParams.get('redirect') || "");
+
+const redirectButton = document.getElementById("redirect-button") as HTMLButtonElement;
+redirectButton.addEventListener("click", async () => {
+    if (!redirect) {
+        alert("redirect is not found");
+        return;
+    }
+    const turnstile = await showTurnstile(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY);
+    const postActionUrl = authApiClient.api.cross_domain.redirector.$url();
+    const newForm = document.createElement("form");
+    newForm.method = "POST";
+    newForm.action = postActionUrl.toString();
+    const inputRedirectUrl = document.createElement("input");
+    inputRedirectUrl.name = "redirectUrl";
+    inputRedirectUrl.value = redirect;
+    const inputTurnstile = document.createElement("input");
+    inputTurnstile.name = "turnstile";
+    inputTurnstile.value = turnstile;
+    newForm.appendChild(inputRedirectUrl);
+    newForm.appendChild(inputTurnstile);
+    document.querySelector("div#redirect-form-container")?.appendChild(newForm);
+    newForm.submit();
+});
+
 const whoAmI = async () => {
-    const { data, error } = await (await client.api.user.whoami.$post()).json();
+    const { data, error } = await (await authApiClient.api.user.whoami.$post()).json();
     console.log(data, error);
     const whoamiResult = document.getElementById("whoami-result") as HTMLPreElement;
     whoamiResult.textContent = JSON.stringify(data, null, 2);
     if (data) {
         logoutButton.classList.remove("hidden");
+        redirectButton.classList.remove("hidden");
         form.classList.add("hidden");
     } else {
         logoutButton.classList.add("hidden");
@@ -67,7 +94,7 @@ whoamiButton.addEventListener("click", whoAmI);
 
 const logoutButton = document.getElementById("logout-button") as HTMLButtonElement;
 logoutButton.addEventListener("click", async () => {
-    const { data, error } = await (await client.api.user.logout.$post()).json();
+    const { data, error } = await (await authApiClient.api.user.logout.$post()).json();
     console.log(data, error);
     window.location.reload();
 }); 

@@ -16,9 +16,11 @@ import { createSession } from '../db/dbUtils/createSession';
 
 export const otpRoute = new Hono<honoTypes>()
     .use(async (c, next) => {
-        const referer = c.req.header('referer');
-        if (referer !== `https://auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}/`) {
-            throw new KNOWN_ERROR("Invalid referer", "INVALID_REFERER");
+        // const referer = c.req.header('referer');
+        // const host = c.req.header('host');
+        const origin = c.req.header('origin');
+        if (origin !== `https://auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`) {
+            throw new KNOWN_ERROR("Invalid origin", "INVALID_ORIGIN");
         }
         await next();
     })

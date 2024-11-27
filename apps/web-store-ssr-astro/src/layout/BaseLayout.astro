@@ -13,6 +13,24 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+		<ul>
+			<li><a href="/">index.astro</a></li>
+			<li>
+				<a href="/hello/world?hello=world#helloworld=1">hello/world.astro</a>
+			</li>
+		</ul>
 		<h1>{title}</h1>
+		<hr />
+		<button id="whoami-button">Who am I</button>
+		<pre id="whoami-result"></pre>
+		<hr />
+		<button class="hidden" id="logout-button">Logout</button>
+		<button class="hidden" id="login-button">Login</button>
+		<script src="../clientScripts/helper.ts"></script>
+		<style>
+			.hidden {
+				display: none;
+			}
+		</style>
 	</body>
 </html>

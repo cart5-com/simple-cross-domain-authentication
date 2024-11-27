@@ -8,6 +8,7 @@ import { secureHeaders } from 'hono/secure-headers'
 import { KNOWN_ERROR } from './errors';
 import type { Session } from './types/SessionType';
 import type { User } from './types/UserType';
+import { crossDomainRoute } from './routes/crossDomainRoute';
 
 export type HonoVariables = {
 	SESSION: Session | null,
@@ -59,6 +60,7 @@ app.get("/", (c) => {
 const routes = app.basePath('/api')
 	.route('/otp', otpRoute)
 	.route('/user', userRoute)
+	.route('/cross_domain', crossDomainRoute)
 
 export type AuthAppType = typeof routes;
 
