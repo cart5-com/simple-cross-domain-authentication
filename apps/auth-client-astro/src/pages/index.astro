@@ -11,8 +11,35 @@
 	</head>
 	<body>
 		<h1>Auth Client</h1>
+		<hr />
+		<form class="hidden" id="register-form">
+			<h2>Register form</h2>
+			<input type="text" name="name" value="test" />
+			<br />
+			<input type="text" name="email" value="test22@test.com" />
+			<br />
+			<input
+				type="password"
+				autocomplete="new-password"
+				name="password"
+				value=""
+			/>
+			<br />
+			<button type="submit">Register</button>
+		</form>
+		<hr />
+		<form class="hidden" id="login-form">
+			<h2>Login form</h2>
+			<input type="text" name="email" value="test22@test.com" />
+			<br />
+			<input type="password" name="password" value="" />
+			<br />
+			<button type="submit">Login</button>
+		</form>
+		<hr />
 		<form class="hidden" id="otp-form">
-			<input type="text" name="verifyEmail" value="test@test.com" />
+			<h2>OTP form</h2>
+			<input type="text" name="verifyEmail" value="test22@test.com" />
 			<br />
 			<input type="hidden" name="code" />
 			<br />

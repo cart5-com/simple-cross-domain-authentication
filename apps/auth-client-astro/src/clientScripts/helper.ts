@@ -7,11 +7,11 @@ import { createAuthApiClient } from "../../../auth-api-hono/src/authApiClient";
 import { showTurnstile } from "./turnstile";
 const authApiClient = createAuthApiClient(`${window.location.origin}/__p_auth/`);
 
-const form = document.getElementById("otp-form") as HTMLFormElement;
-form?.addEventListener("submit", async (e) => {
+const otpForm = document.getElementById("otp-form") as HTMLFormElement;
+otpForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const formData = new FormData(form);
+    const formData = new FormData(otpForm);
     const verifyEmail = formData.get("verifyEmail") as string;
     const code = formData.get("code") as string;
     let req;
@@ -36,13 +36,49 @@ form?.addEventListener("submit", async (e) => {
         console.error(error);
         alert(JSON.stringify(error, null, 2));
     } else {
-        const codeInput = form.querySelector("[name=code]") as HTMLInputElement;
+        const codeInput = otpForm.querySelector("[name=code]") as HTMLInputElement;
         if (code) {
             whoAmI();
             codeInput.type = "hidden";
         } else {
             codeInput.type = "text";
         }
+    }
+});
+
+const registerForm = document.getElementById("register-form") as HTMLFormElement;
+registerForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(registerForm);
+    const { data, error } = await (await authApiClient.api.email_password.register.$post({
+        form: {
+            name: formData.get("name") as string,
+            email: formData.get("email") as string,
+            password: formData.get("password") as string,
+            turnstile: await showTurnstile(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY)
+        },
+    })).json();
+    if (error) {
+        console.error(error);
+        alert(JSON.stringify(error, null, 2));
+    }
+});
+const loginForm = document.getElementById("login-form") as HTMLFormElement;
+loginForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(loginForm);
+    const { data, error } = await (await authApiClient.api.email_password.login.$post({
+        form: {
+            email: formData.get("email") as string,
+            password: formData.get("password") as string,
+            turnstile: await showTurnstile(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY)
+        },
+    })).json();
+    if (error) {
+        console.error(error);
+        alert(JSON.stringify(error, null, 2));
+    } else {
+        whoAmI();
     }
 });
 
@@ -83,10 +119,14 @@ const whoAmI = async () => {
     if (data) {
         logoutButton.classList.remove("hidden");
         redirectButton.classList.remove("hidden");
-        form.classList.add("hidden");
+        otpForm.classList.add("hidden");
+        registerForm.classList.add("hidden");
+        loginForm.classList.add("hidden");
     } else {
         logoutButton.classList.add("hidden");
-        form.classList.remove("hidden");
+        otpForm.classList.remove("hidden");
+        registerForm.classList.remove("hidden");
+        loginForm.classList.remove("hidden");
     }
 }
 

@@ -10,9 +10,8 @@ import { sendUserOtpEmail } from '../utils/email';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { KNOWN_ERROR } from '../errors';
-import { upsertUser } from '../db/db-actions/upsertUser';
-import { generateSessionToken } from '../utils/generateSessionToken';
-import { createSession } from '../db/db-actions/createSession';
+import { markEmailAsVerified, updateUserName, upsertUser } from '../db/db-actions/userActions';
+import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
 
 export const otpRoute = new Hono<honoTypes>()
     .use(async (c, next) => {
@@ -85,16 +84,14 @@ export const otpRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("Invalid OTP", "INVALID_OTP");
             }
 
-            const { userId } = (await upsertUser(email, true))[0];
-            const sessionToken = generateSessionToken();
-            const session = await createSession(sessionToken, userId, c.req.header('host')!);
-            setCookie(c, SESSION_COOKIE_NAME, sessionToken, {
-                path: "/",
-                secure: true, // using https in dev with caddy
-                httpOnly: true,
-                expires: session.expiresAt,
-                sameSite: "strict"
-            });
+            const user = await upsertUser(email);
+            if (!user.isEmailVerified) {
+                await markEmailAsVerified(email);
+            }
+            if (user.name === "") {
+                await updateUserName(user.id, email.split('@')[0]);
+            }
+            await createUserSessionAndSetCookie(c, user);
 
             return c.json({
                 data: "success",

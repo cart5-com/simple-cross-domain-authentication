@@ -8,6 +8,13 @@
       "when": 1732666924294,
       "tag": "0000_unusual_christian_walker",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1732750034341,
+      "tag": "0001_yellow_barracuda",
+      "breakpoints": true
     }
   ]
 }

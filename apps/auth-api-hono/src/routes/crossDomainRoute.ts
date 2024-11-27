@@ -5,14 +5,13 @@ import { z } from 'zod';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { KNOWN_ERROR } from '../errors';
 import { isKnownHostname } from '../utils/knownHostnames';
-import { createSession } from '../db/db-actions/createSession';
+import { createSession, createUserSessionAndSetCookie } from '../db/db-actions/createSession';
 import { generateSessionToken } from '../utils/generateSessionToken';
 import { CROSS_DOMAIN_SESSION_EXPIRES_IN, SESSION_COOKIE_NAME } from '../consts';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 import { validateSessionCookie } from '../db/db-actions/validateSessionCookie';
 import deleteSession from '../db/db-actions/deleteSession';
-import { setCookie } from 'hono/cookie';
 
 /**
  * Cross domain authentication route handler
@@ -127,19 +126,11 @@ export const crossDomainRoute = new Hono<honoTypes>()
             await deleteSession(tmpSession.id);
 
             // Create new permanent session for this domain
-            const newSessionToken = generateSessionToken();
             const hostname = c.req.header('host');
             if (!hostname) {
                 throw new KNOWN_ERROR("Host not found", "HOST_NOT_FOUND");
             }
-            const newSession = await createSession(newSessionToken, user.id, hostname);
-            setCookie(c, SESSION_COOKIE_NAME, newSessionToken, {
-                path: "/",
-                secure: true, // using https in dev with caddy
-                httpOnly: true,
-                expires: newSession.expiresAt,
-                sameSite: "strict" // can not get ssr user with strict, but it's ok. Once page changed, ssr user will be available.
-            });
+            await createUserSessionAndSetCookie(c, user);
 
             // Redirect to final destination
             return c.redirect(redirectUrl.toString());

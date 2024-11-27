@@ -2,12 +2,13 @@ import { serve, type HttpBindings } from '@hono/node-server'
 import { Hono } from "hono";
 import { csrfChecks } from "./middlewares/csrf";
 import { authChecks } from './middlewares/auth';
-import { otpRoute } from './routes/otpRoute';
-import { userRoute } from './routes/userRoute';
 import { secureHeaders } from 'hono/secure-headers'
 import { KNOWN_ERROR } from './errors';
 import type { Session } from './types/SessionType';
 import type { User } from './types/UserType';
+import { userRoute } from './routes/userRoute';
+import { otpRoute } from './routes/otpRoute';
+import { emailPasswordRoute } from './routes/emailPasswordRoute';
 import { crossDomainRoute } from './routes/crossDomainRoute';
 
 export type HonoVariables = {
@@ -58,8 +59,9 @@ app.get("/", (c) => {
 });
 
 const routes = app.basePath('/api')
-	.route('/otp', otpRoute)
 	.route('/user', userRoute)
+	.route('/otp', otpRoute)
+	.route('/email_password', emailPasswordRoute)
 	.route('/cross_domain', crossDomainRoute)
 
 export type AuthAppType = typeof routes;
