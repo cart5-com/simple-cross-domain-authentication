@@ -3,17 +3,47 @@
 This is a monorepo for a simple cross-domain authentication example.
 (used auth sample from lucia-auth by pilcrowonpaper.com)
 
-## Requirements for local development
+# Simple Cross-Domain Authentication Monorepo
 
-What I used to develop:
+A demonstration of cross-domain authentication implementation using modern web technologies. This project showcases secure authentication patterns across multiple domains.
 
-- Node.js v20.11 (use nvm to install)
-- pnpm v9.9.0 ( npm install -g pnpm )
-- caddy v2.8.4 (you may use brew to install)
+## Features
 
-## Hosts file
+- ✅ Cross-domain authentication
+- ✅ One-time password (OTP) authentication
+- ✅ CSRF protection
+- ✅ Secure session management
+- ✅ Cloudflare Turnstile integration
+- ✅ Email verification
 
-Add the following to your hosts file:
+## Architecture
+
+- **Frontend**: Astro (SSG & SSR)
+- **Backend**: Hono (TypeScript)
+- **Database**: SQLite with Drizzle ORM
+- **Proxy**: Caddy for local development
+
+## Project Structure
+
+```
+apps/
+├── auth-api-hono/ # Authentication API service
+├── auth-client-astro/ # Authentication client (SSG)
+├── web-store-ssr-astro/# Demo store with SSR
+└── proxy-caddy/ # Local development proxy
+```
+
+## Prerequisites
+
+- Node.js v20.11+ (recommended: use nvm)
+- pnpm v9.9.0+ (`npm install -g pnpm`)
+- Caddy v2.8.4+ (macOS: `brew install caddy`)
+
+## Local Development Setup
+
+1. Configure hosts file:
+
+Add to /etc/hosts
 
 ```
 127.0.0.1 auth.cart5dev.com
@@ -22,37 +52,24 @@ Add the following to your hosts file:
 127.0.0.1 unknown-store.com
 ```
 
-## Copy .env.example
+2. Setup environment:
 
 ```
 cp .env.example .env
 ```
 
-## Run
+3. Install dependencies and start development servers:
 
 ```
-pnpm i
+pnpm install
 pnpm dev
 ```
 
-then open browser and navigate to https://sample-store-1.com
+4. Access the demo store at https://sample-store-1.com
 
-## Stack
+## Roadmap
 
-- Hono for API
-- Astro for web client
-- Drizzle with sqlite
-
-## Apps
-
-- proxy-caddy: I do not like dealing with CORS issues. So I use caddy to proxy requests to the apps.
-- auth-api-hono:
-- auth-client-astro: used for static site generation
-- web-store-ssr-astro:
-
-## TODO
-
-- [ ] add signup with email/password
-- [ ] add login with email/password
-- [ ] add login with google
-- [ ] add 2FA
+- [x] One-time password authentication
+- [ ] Email/password authentication
+- [ ] Google OAuth integration
+- [ ] Two-factor authentication (2FA)
