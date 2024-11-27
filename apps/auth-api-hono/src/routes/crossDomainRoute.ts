@@ -137,7 +137,7 @@ export const crossDomainRoute = new Hono<honoTypes>()
                 secure: true, // using https in dev with caddy
                 httpOnly: true,
                 expires: newSession.expiresAt,
-                sameSite: "strict"
+                sameSite: "strict" // can not get ssr user with strict, but it's ok. Once page changed, ssr user will be available.
             });
 
             // Redirect to final destination
