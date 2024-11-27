@@ -17,9 +17,9 @@ export const authMiddleware = defineMiddleware(async (context, next) => {
     });
     const whoamiData = await whoamiResponse.json();
     if (whoamiData.data) {
-        context.locals.user = whoamiData.data;
+        context.locals.USER = whoamiData.data;
     } else {
-        context.locals.user = null;
+        context.locals.USER = null;
     }
     const response = await next();
     const setCookieHeaders = whoamiResponse.headers.getSetCookie();

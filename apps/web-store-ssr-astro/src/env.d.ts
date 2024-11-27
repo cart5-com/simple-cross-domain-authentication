@@ -2,6 +2,6 @@
 /// <reference types="astro/client" />
 declare namespace App {
     interface Locals {
-        user: import("../../auth-api-hono/src/authApiClient").User | null;
+        USER: import("../../auth-api-hono/src/authApiClient").User | null;
     }
 }
