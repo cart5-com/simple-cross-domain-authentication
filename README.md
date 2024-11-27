@@ -28,6 +28,21 @@ This is a monorepo for a simple cross-domain authentication example.
    - Redirects back to store with encrypted data
    - Store website validates and creates its own session
 
+## Basic Flow details for OTP
+
+1. User enters email and completes Turnstile verification
+
+   - System generates OTP
+   - Encrypts OTP and email into JWT token
+   - Stores token in **HTTP-only cookie**
+   - Sends OTP to user's email
+
+2. User enters received OTP code
+   - System validates OTP code against stored token
+   - Creates or updates user record
+   - Generates session token
+   - Sets session cookie
+
 ## Architecture
 
 - **Frontend**: Astro (SSG & SSR)
