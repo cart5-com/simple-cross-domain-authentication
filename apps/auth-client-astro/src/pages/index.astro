@@ -46,6 +46,10 @@
 			<button type="submit">Send</button>
 		</form>
 		<hr />
+		<a class="hidden" href="#" id="google-oauth-button">
+			<button>Sign in with Google</button>
+		</a>
+		<hr />
 		<button id="whoami-button">Who am I</button>
 		<pre id="whoami-result"></pre>
 		<hr />
@@ -53,11 +57,12 @@
 		<hr />
 		<button class="hidden" id="redirect-button">Sign in with Cart5.com</button>
 		<div id="redirect-form-container" class="hidden"></div>
-		<script src="../clientScripts/helper.ts"></script>
+
 		<style>
 			.hidden {
 				display: none;
 			}
 		</style>
+		<script src="../clientScripts/helper.ts"></script>
 	</body>
 </html>

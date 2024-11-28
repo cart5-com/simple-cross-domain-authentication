@@ -98,5 +98,5 @@ pnpm dev
 
 - ✅ One-time password authentication
 - ✅ Email/password authentication
-- [ ] Google OAuth integration
+- ✅ Google OAuth integration
 - [ ] Two-factor authentication (2FA)

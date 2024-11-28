@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { generateRandomOTP } from '../utils/generateRandomOtp';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
-import { OTP_COOKIE_NAME, SESSION_COOKIE_NAME } from '../consts';
+import { OTP_COOKIE_NAME } from '../consts';
 import { sendUserOtpEmail } from '../utils/email';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
@@ -34,7 +34,7 @@ export const otpRoute = new Hono<honoTypes>()
             await validateTurnstile(turnstile, c.req.header('X-Forwarded-For'));
 
             const otp = generateRandomOTP().toUpperCase();
-            const otpToken = await signJwtAndEncrypt(
+            const otpToken = await signJwtAndEncrypt<OtpTokenPayload>(
                 {
                     email: verifyEmail,
                     otp,
@@ -75,7 +75,7 @@ export const otpRoute = new Hono<honoTypes>()
             if (!otpToken) {
                 throw new KNOWN_ERROR("Invalid or expired OTP", "INVALID_OTP");
             }
-            const { email, otp } = await decryptAndVerifyJwt<{ email: string, otp: string }>(
+            const { email, otp } = await decryptAndVerifyJwt<OtpTokenPayload>(
                 otpToken,
                 getEnvironmentVariable("JWT_SECRET"),
                 getEnvironmentVariable("ENCRYPTION_KEY")
@@ -88,7 +88,7 @@ export const otpRoute = new Hono<honoTypes>()
             if (!user.isEmailVerified) {
                 await markEmailAsVerified(email);
             }
-            if (user.name === "") {
+            if (user.name === null) {
                 await updateUserName(user.id, email.split('@')[0]);
             }
             await createUserSessionAndSetCookie(c, user.id);
@@ -99,3 +99,8 @@ export const otpRoute = new Hono<honoTypes>()
             }, 200);
         }
     )
+
+type OtpTokenPayload = {
+    email: string;
+    otp: string;
+}

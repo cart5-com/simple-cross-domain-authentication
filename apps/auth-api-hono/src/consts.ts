@@ -1,5 +1,6 @@
 
 export const SESSION_COOKIE_NAME = `auth_session`;
+export const GOOGLE_OAUTH_COOKIE_NAME = `google_oauth_token`;
 export const OTP_COOKIE_NAME = "otp_token";
 export const localDbPath = "file:./sqlite.db";
 export const SESSION_EXPIRES_IN = 2592000000; //1000 * 60 * 60 * 24 * 30; // 30 days

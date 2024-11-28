@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "a3ff5f2d-6ad8-46dd-8362-067b87ed29b1",
+  "id": "b47d25ab-938c-471b-ba5a-b3ffeb03990f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "session": {
@@ -80,16 +80,30 @@
           "notNull": true,
           "autoincrement": false,
           "default": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "picture_url": {
+          "name": "picture_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
-        "user_id_unique": {
-          "name": "user_id_unique",
-          "columns": [
-            "id"
-          ],
-          "isUnique": true
-        },
         "user_email_unique": {
           "name": "user_email_unique",
           "columns": [

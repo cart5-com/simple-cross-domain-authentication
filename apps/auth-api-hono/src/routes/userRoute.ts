@@ -11,6 +11,7 @@ export const userRoute = new Hono<honoTypes>()
             const session = c.get('SESSION');
             if (session) {
                 await deleteSession(session.id);
+                // TODO: maybe we can use deleteCookie here
                 setCookie(c, SESSION_COOKIE_NAME, "", {
                     path: "/",
                     secure: true, // using https in dev with caddy

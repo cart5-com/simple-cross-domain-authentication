@@ -9,8 +9,10 @@ CREATE TABLE `session` (
 CREATE TABLE `user` (
 	`id` text PRIMARY KEY NOT NULL,
 	`email` text NOT NULL,
-	`is_email_verified` integer DEFAULT false NOT NULL
+	`is_email_verified` integer DEFAULT false NOT NULL,
+	`name` text,
+	`password_hash` text,
+	`picture_url` text
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `user_id_unique` ON `user` (`id`);--> statement-breakpoint
 CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);

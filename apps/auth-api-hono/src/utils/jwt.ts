@@ -21,8 +21,8 @@ export const verifyJWT = <T>(token: string, JWT_SECRET: string): T => {
     return verify(token, JWT_SECRET) as T;
 };
 
-export const signJwtAndEncrypt = async (
-    payloadParam: JWTPayload,
+export const signJwtAndEncrypt = async <T extends JWTPayload>(
+    payloadParam: T,
     JWT_SECRET: string,
     ENCRYPTION_KEY: string,
     maxAge: number = 600

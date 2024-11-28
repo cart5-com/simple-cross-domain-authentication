@@ -22,6 +22,7 @@ export const authChecks = createMiddleware(async (c, next) => {
             });
         }
         if (!session) {
+            // TODO: maybe we can use deleteCookie here
             setCookie(c, SESSION_COOKIE_NAME, "", {
                 path: "/",
                 secure: true, // using https in dev with caddy

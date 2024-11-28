@@ -1,16 +1,20 @@
 import { eq } from "drizzle-orm";
 import db from "../drizzle";
 import { userTable } from "../schema";
+import { generateKey } from "../../utils/generateKey";
 
 export async function upsertUser(email: string, passwordHash: string | null = null) {
     let existingUser = await getUserByEmail(email);
     if (!existingUser) {
+        const id = generateKey('u');
         const newUser = await db.insert(userTable)
             .values({
+                id,
                 email,
                 isEmailVerified: false,
-                name: "",
-                passwordHash
+                name: null,
+                passwordHash,
+                pictureUrl: null,
             }).returning();
         existingUser = newUser[0];
     }
@@ -31,4 +35,8 @@ export async function updateUserName(userId: string, name: string) {
 
 export async function getUserByEmail(email: string) {
     return (await db.select().from(userTable).where(eq(userTable.email, email)))[0];
+}
+
+export async function updateUserPictureUrl(userId: string, pictureUrl: string) {
+    await db.update(userTable).set({ pictureUrl }).where(eq(userTable.id, userId));
 }

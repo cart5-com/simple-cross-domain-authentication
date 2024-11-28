@@ -65,7 +65,7 @@ export const crossDomainRoute = new Hono<honoTypes>()
                 targetHost: url.hostname
             };
             // Create encrypted JWT containing session info
-            const code = await signJwtAndEncrypt(
+            const code = await signJwtAndEncrypt<CrossDomainCodePayload>(
                 payload,
                 getEnvironmentVariable("JWT_SECRET"),
                 getEnvironmentVariable("ENCRYPTION_KEY"),

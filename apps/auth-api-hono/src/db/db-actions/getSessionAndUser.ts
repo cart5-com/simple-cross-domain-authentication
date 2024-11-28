@@ -35,7 +35,8 @@ const getUserFromSessionId = async (sessionId: string): Promise<User | null> => 
             id: userTable.id,
             email: userTable.email,
             isEmailVerified: userTable.isEmailVerified,
-            name: userTable.name
+            name: userTable.name,
+            pictureUrl: userTable.pictureUrl
         })
         .from(sessionTable)
         .innerJoin(userTable, eq(sessionTable.userId, userTable.id))

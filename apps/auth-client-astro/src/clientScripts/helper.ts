@@ -111,6 +111,11 @@ redirectButton.addEventListener("click", async () => {
     newForm.submit();
 });
 
+const googleOAuthButton = document.querySelector("#google-oauth-button") as HTMLAnchorElement;
+const googleRedirectUrl = authApiClient.api.google_oauth.redirect.$url();
+googleRedirectUrl.searchParams.set("redirect_uri", encodeURIComponent(window.location.href));
+googleOAuthButton.href = googleRedirectUrl.toString();
+
 const whoAmI = async () => {
     const { data, error } = await (await authApiClient.api.user.whoami.$post()).json();
     console.log(data, error);
@@ -122,11 +127,13 @@ const whoAmI = async () => {
         otpForm.classList.add("hidden");
         registerForm.classList.add("hidden");
         loginForm.classList.add("hidden");
+        googleOAuthButton.classList.add("hidden");
     } else {
         logoutButton.classList.add("hidden");
         otpForm.classList.remove("hidden");
         registerForm.classList.remove("hidden");
         loginForm.classList.remove("hidden");
+        googleOAuthButton.classList.remove("hidden");
     }
 }
 
