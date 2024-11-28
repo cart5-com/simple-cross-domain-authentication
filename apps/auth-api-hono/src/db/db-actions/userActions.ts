@@ -21,6 +21,36 @@ export async function upsertUser(email: string, passwordHash: string | null = nu
     return existingUser;
 }
 
+export async function updateRequiredFields(
+    savedUserData: typeof userTable.$inferSelect,
+    attributes: {
+        name: string | null,
+        pictureUrl: string | null,
+        isEmailVerified: boolean
+    }
+) {
+    const promises: Promise<void>[] = [];
+
+    // only update if it is null
+    // if savedUserData.name is null and attributes.name is provided, update it
+    if (attributes.name !== null && savedUserData.name === null) {
+        promises.push(updateUserName(savedUserData.id, attributes.name));
+    }
+
+    // only update if it is different
+    // if savedUserData.pictureUrl is different from attributes.pictureUrl, update it
+    if (attributes.pictureUrl !== null && savedUserData.pictureUrl !== attributes.pictureUrl) {
+        promises.push(updateUserPictureUrl(savedUserData.id, attributes.pictureUrl));
+    }
+
+    // only update if it is a must
+    // if savedUserData.isEmailVerified is false and attributes.isEmailVerified is true, mark it as verified
+    if (savedUserData.isEmailVerified === false && attributes.isEmailVerified) {
+        promises.push(markEmailAsVerified(savedUserData.email));
+    }
+    await Promise.all(promises);
+}
+
 export async function isEmailExists(email: string) {
     return (await db.select().from(userTable).where(eq(userTable.email, email))).length > 0;
 }
