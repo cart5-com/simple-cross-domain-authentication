@@ -96,7 +96,7 @@ pnpm dev
 
 ## Roadmap
 
-- [x] One-time password authentication
-- [x] Email/password authentication
+- ✅ One-time password authentication
+- ✅ Email/password authentication
 - [ ] Google OAuth integration
 - [ ] Two-factor authentication (2FA)

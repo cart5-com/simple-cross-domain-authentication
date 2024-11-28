@@ -1,9 +1,37 @@
 import { defineMiddleware } from "astro:middleware";
-import { createAuthApiClient } from '../../../auth-api-hono/src/authApiClient'
+import { createAuthApiClient, AUTH_SESSION_COOKIE_NAME } from '../../../auth-api-hono/src/authApiClient'
+import type { APIContext } from "astro";
 
 export const authMiddleware = defineMiddleware(async (context, next) => {
+    // Skip auth check if no session cookie exists
+    if (!context.cookies.get(AUTH_SESSION_COOKIE_NAME)?.value) {
+        context.locals.USER = null;
+        return next();
+    }
+
+    if (context.cookies.get(AUTH_SESSION_COOKIE_NAME)?.value) {
+        try {
+            const { data, whoamiResponse } = await fetchWhoAmI(context);
+            context.locals.USER = data;
+            const response = await next();
+            const setCookieHeaders = whoamiResponse.headers.getSetCookie();
+            for (const setCookie of setCookieHeaders) {
+                response.headers.append("Set-Cookie", setCookie);
+            }
+            return response;
+        } catch (e) {
+            console.log('Auth middleware error:', e);
+            context.locals.USER = null;
+            return next();
+        }
+    }
+    return next();
+});
+
+async function fetchWhoAmI(context: APIContext) {
     const authApiClient = createAuthApiClient(`${context.url.origin}/__p_auth/`);
     const whoamiUrl = await authApiClient.api.user.whoami.$url();
+    const authCookieValue = context.cookies.get(AUTH_SESSION_COOKIE_NAME)?.value;
     whoamiUrl.protocol = "https";
     if (import.meta.env.DEV) {
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -12,24 +40,12 @@ export const authMiddleware = defineMiddleware(async (context, next) => {
         method: "POST",
         headers: {
             origin: context.url.origin,
-            cookie: context.request.headers.get("cookie") ?? ""
+            cookie: `${AUTH_SESSION_COOKIE_NAME}=${authCookieValue}`
         }
     });
-    try {
-        const whoamiData = await whoamiResponse.json();
-        if (whoamiData.data) {
-            context.locals.USER = whoamiData.data;
-        } else {
-            context.locals.USER = null;
-        }
-    } catch (e) {
-        console.error(e);
-        context.locals.USER = null;
-    }
-    const response = await next();
-    const setCookieHeaders = whoamiResponse.headers.getSetCookie();
-    for (const setCookie of setCookieHeaders) {
-        response.headers.append("Set-Cookie", setCookie);
-    }
-    return response;
-});
+    const { data, error } = await whoamiResponse.json();
+    return {
+        data,
+        whoamiResponse
+    };
+}
