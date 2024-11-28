@@ -5,13 +5,10 @@ import { z } from 'zod';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { KNOWN_ERROR } from '../errors';
 import { isKnownHostname } from '../utils/knownHostnames';
-import { createSession, createUserSessionAndSetCookie } from '../db/db-actions/createSession';
-import { generateSessionToken } from '../utils/generateSessionToken';
-import { CROSS_DOMAIN_SESSION_EXPIRES_IN, SESSION_COOKIE_NAME } from '../consts';
+import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
+import { CROSS_DOMAIN_SESSION_EXPIRES_IN } from '../consts';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
-import { validateSessionCookie } from '../db/db-actions/validateSessionCookie';
-import deleteSession from '../db/db-actions/deleteSession';
 
 /**
  * Cross domain authentication route handler
@@ -59,19 +56,19 @@ export const crossDomainRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("Invalid redirect URL", "INVALID_REDIRECT_URL");
             }
 
-            // Create temporary cross-domain session
-            const sessionToken = generateSessionToken();
-            const session = await createSession(sessionToken, user.id, url.hostname, CROSS_DOMAIN_SESSION_EXPIRES_IN);
-
+            const payload: CrossDomainCodePayload = {
+                userId: user.id,
+                turnstile,
+                createdAtTimestamp: Date.now(),
+                nonce: crypto.randomUUID(),
+                sourceHost: new URL(refererHeader).hostname,
+                targetHost: url.hostname
+            };
             // Create encrypted JWT containing session info
             const code = await signJwtAndEncrypt(
-                {
-                    sessionToken,
-                    sessionId: session.id,
-                    turnstile,
-                },
+                payload,
                 getEnvironmentVariable("JWT_SECRET"),
-                getEnvironmentVariable("ENCRYPTION_KEY")
+                getEnvironmentVariable("ENCRYPTION_KEY"),
             );
 
             // Redirect to callback URL on target domain
@@ -92,14 +89,20 @@ export const crossDomainRoute = new Hono<honoTypes>()
 
             // Decrypt and verify the JWT token
             const {
-                sessionToken: tmpSessionToken,
-                sessionId: tmpSessionId,
-                turnstile
-            } = await decryptAndVerifyJwt<{ sessionToken: string, sessionId: string, turnstile: string }>(
+                userId,
+                turnstile,
+                createdAtTimestamp,
+                sourceHost,
+                targetHost
+            } = await decryptAndVerifyJwt<CrossDomainCodePayload>(
                 query.code,
                 getEnvironmentVariable("JWT_SECRET"),
                 getEnvironmentVariable("ENCRYPTION_KEY")
             );
+
+            if (sourceHost !== (`auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`)) {
+                throw new KNOWN_ERROR("Invalid source host", "INVALID_SOURCE_HOST");
+            }
 
             // Verify turnstile token is valid
             await validateTurnstile(turnstile, c.req.header('X-Forwarded-For'));
@@ -113,29 +116,34 @@ export const crossDomainRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("Invalid redirect URL", "INVALID_REDIRECT_URL");
             }
 
-            // Validate temporary session
-            const { user, session: tmpSession } = await validateSessionCookie(tmpSessionToken, host);
-            if (!tmpSession) {
-                throw new KNOWN_ERROR("Session not found", "SESSION_NOT_FOUND");
+            // Validate payload
+            if (!userId) {
+                throw new KNOWN_ERROR("User not found", "USER_NOT_FOUND");
             }
-            if (tmpSession.id !== tmpSessionId) {
-                throw new KNOWN_ERROR("Invalid session", "INVALID_SESSION");
+            if (Date.now() - createdAtTimestamp > CROSS_DOMAIN_SESSION_EXPIRES_IN) {
+                throw new KNOWN_ERROR("Code expired", "CODE_EXPIRED");
             }
 
-            // Delete temporary session
-            await deleteSession(tmpSession.id);
+            if (targetHost !== host) {
+                throw new KNOWN_ERROR("Host mismatch", "HOST_MISMATCH");
+            }
 
             // Create new permanent session for this domain
-            const hostname = c.req.header('host');
-            if (!hostname) {
-                throw new KNOWN_ERROR("Host not found", "HOST_NOT_FOUND");
-            }
-            await createUserSessionAndSetCookie(c, user);
+            await createUserSessionAndSetCookie(c, userId);
 
             // Redirect to final destination
             return c.redirect(redirectUrl.toString());
         }
     )
+
+type CrossDomainCodePayload = {
+    userId: string,
+    turnstile: string,
+    createdAtTimestamp: number,
+    nonce: string,         // Random unique value
+    sourceHost: string,    // Original requesting host
+    targetHost: string,    // Destination host
+};
 
 /**
  * Generates the callback URL for cross-domain authentication

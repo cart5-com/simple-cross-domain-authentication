@@ -91,7 +91,7 @@ export const otpRoute = new Hono<honoTypes>()
             if (user.name === "") {
                 await updateUserName(user.id, email.split('@')[0]);
             }
-            await createUserSessionAndSetCookie(c, user);
+            await createUserSessionAndSetCookie(c, user.id);
 
             return c.json({
                 data: "success",

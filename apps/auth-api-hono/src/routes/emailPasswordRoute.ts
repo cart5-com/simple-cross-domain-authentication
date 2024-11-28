@@ -82,7 +82,7 @@ export const emailPasswordRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("OTP required", "OTP_REQUIRED");
             }
 
-            await createUserSessionAndSetCookie(c, user);
+            await createUserSessionAndSetCookie(c, user.id);
 
             return c.json({
                 data: "success",

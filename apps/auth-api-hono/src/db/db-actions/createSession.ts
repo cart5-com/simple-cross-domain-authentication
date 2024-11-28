@@ -28,9 +28,9 @@ export async function createSession(token: string, userId: string, hostname: str
 }
 
 
-export async function createUserSessionAndSetCookie(c: Context, user: User) {
+export async function createUserSessionAndSetCookie(c: Context, userId: string) {
     const sessionToken = generateSessionToken();
-    const session = await createSession(sessionToken, user.id, c.req.header('host')!);
+    const session = await createSession(sessionToken, userId, c.req.header('host')!);
     setCookie(c, SESSION_COOKIE_NAME, sessionToken, {
         path: "/",
         secure: true, // using https in dev with caddy
