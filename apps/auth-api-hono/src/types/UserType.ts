@@ -4,3 +4,9 @@ export interface User {
     isEmailVerified: boolean;
     name: string;
 }
+
+export type TwoFactorAuthVerifyPayload = {
+    userId: string,
+    email: string,
+    nonce: string,
+}

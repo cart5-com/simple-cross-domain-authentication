@@ -8,6 +8,10 @@ import { hashPassword, verifyPasswordHash, verifyPasswordStrength } from '../uti
 import { getUserByEmail, isEmailExists, updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
+import { signJwtAndEncrypt } from '../utils/jwt';
+import type { TwoFactorAuthVerifyPayload } from '../types/UserType';
+import { TWO_FACTOR_AUTH_COOKIE_NAME } from '../consts';
+import { setCookie } from 'hono/cookie';
 
 const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
 
@@ -89,7 +93,20 @@ export const emailPasswordRoute = new Hono<honoTypes>()
             }
 
             if (user.twoFactorAuthKey) {
-                // TODO: set cookie for 10 minutes to save userId temporarily
+                const twoFactorAuthToken = await signJwtAndEncrypt<TwoFactorAuthVerifyPayload>(
+                    {
+                        userId: user.id,
+                        email: user.email,
+                        nonce: crypto.randomUUID(),
+                    }
+                );
+                setCookie(c, TWO_FACTOR_AUTH_COOKIE_NAME, twoFactorAuthToken, {
+                    path: "/",
+                    secure: true, // using https in dev with caddy
+                    httpOnly: true,
+                    maxAge: 600, // 10 minutes
+                    sameSite: "strict"
+                });
                 throw new KNOWN_ERROR("Two factor authentication required", "TWO_FACTOR_AUTH_REQUIRED");
             }
 

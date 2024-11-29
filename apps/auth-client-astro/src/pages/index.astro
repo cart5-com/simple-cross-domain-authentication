@@ -59,6 +59,14 @@
 		</button>
 		<hr />
 		<div id="two-factor-auth-result"></div>
+		<hr />
+		<form id="two-factor-verify-form" class="hidden">
+			<h2>Two factor verify form</h2>
+			<input type="text" name="userProvidedCode" />
+			<br />
+			<button type="submit">Verify</button>
+		</form>
+		<hr />
 		<form id="two-factor-auth-form" class="hidden">
 			<input type="text" name="encodedTOTPKey" />
 			<br />

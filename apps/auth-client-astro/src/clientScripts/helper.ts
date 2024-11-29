@@ -131,6 +131,7 @@ const whoAmI = async () => {
         loginForm.classList.add("hidden");
         googleOAuthButton.classList.add("hidden");
         getNewTwoFactorAuthButton.classList.remove("hidden");
+        twoFactorVerifyForm.classList.add("hidden");
     } else {
         logoutButton.classList.add("hidden");
         otpForm.classList.remove("hidden");
@@ -138,6 +139,7 @@ const whoAmI = async () => {
         loginForm.classList.remove("hidden");
         googleOAuthButton.classList.remove("hidden");
         getNewTwoFactorAuthButton.classList.add("hidden");
+        twoFactorVerifyForm.classList.remove("hidden");
     }
 }
 
@@ -190,5 +192,23 @@ twoFactorAuthForm.addEventListener("submit", async (e) => {
         alert(JSON.stringify(error, null, 2));
     } else if (data) {
         twoFactorAuthResult.innerHTML = `Recovery code: ${data.recoveryCode}`;
+    }
+});
+
+const twoFactorVerifyForm = document.getElementById("two-factor-verify-form") as HTMLFormElement;
+twoFactorVerifyForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(twoFactorVerifyForm);
+    const { data, error } = await (await authApiClient.api["two-factor-auth"].verify.$post({
+        form: {
+            userProvidedCode: formData.get("userProvidedCode") as string,
+            turnstile: await showTurnstile(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY)
+        },
+    })).json();
+    console.log(data, error);
+    if (error) {
+        alert(JSON.stringify(error, null, 2));
+    } else {
+        whoAmI();
     }
 });
