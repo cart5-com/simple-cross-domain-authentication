@@ -10,7 +10,8 @@ import { userRoute } from './routes/userRoute';
 import { otpRoute } from './routes/otpRoute';
 import { emailPasswordRoute } from './routes/emailPasswordRoute';
 import { crossDomainRoute } from './routes/crossDomainRoute';
-import { googleOAuthRoute } from './routes/googleOauthRoute';
+import { googleOAuthRoute } from './routes/googleOAuthRoute';
+import { twoFactorAuthRoute } from './routes/twoFactorAuthRoute';
 
 export type HonoVariables = {
 	SESSION: Session | null,
@@ -65,6 +66,7 @@ const routes = app.basePath('/api')
 	.route('/email_password', emailPasswordRoute)
 	.route('/cross_domain', crossDomainRoute)
 	.route('/google_oauth', googleOAuthRoute)
+	.route('/two-factor-auth', twoFactorAuthRoute)
 
 export type AuthAppType = typeof routes;
 

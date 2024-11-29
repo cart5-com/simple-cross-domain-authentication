@@ -111,6 +111,8 @@ redirectButton.addEventListener("click", async () => {
     newForm.submit();
 });
 
+
+
 const googleOAuthButton = document.querySelector("#google-oauth-button") as HTMLAnchorElement;
 const googleRedirectUrl = authApiClient.api.google_oauth.redirect.$url();
 googleRedirectUrl.searchParams.set("redirect_uri", encodeURIComponent(window.location.href));
@@ -128,12 +130,14 @@ const whoAmI = async () => {
         registerForm.classList.add("hidden");
         loginForm.classList.add("hidden");
         googleOAuthButton.classList.add("hidden");
+        getNewTwoFactorAuthButton.classList.remove("hidden");
     } else {
         logoutButton.classList.add("hidden");
         otpForm.classList.remove("hidden");
         registerForm.classList.remove("hidden");
         loginForm.classList.remove("hidden");
         googleOAuthButton.classList.remove("hidden");
+        getNewTwoFactorAuthButton.classList.add("hidden");
     }
 }
 
@@ -147,4 +151,39 @@ logoutButton.addEventListener("click", async () => {
     const { data, error } = await (await authApiClient.api.user.logout.$post()).json();
     console.log(data, error);
     window.location.reload();
-}); 
+});
+
+
+
+const twoFactorAuthResult = document.getElementById("two-factor-auth-result") as HTMLDivElement;
+const twoFactorAuthForm = document.getElementById("two-factor-auth-form") as HTMLFormElement;
+
+const getNewTwoFactorAuthButton = document.querySelector("#get-new-two-factor-auth-button") as HTMLButtonElement;
+getNewTwoFactorAuthButton.addEventListener("click", async () => {
+    const { data, error } = await (await authApiClient.api["two-factor-auth"].new.$post()).json();
+    console.log(data, error);
+    twoFactorAuthResult.innerHTML = "";
+    const qrContainerDiv = document.createElement("div");
+    qrContainerDiv.style.maxWidth = "300px";
+    qrContainerDiv.innerHTML = data.qrCodeSVG;
+    twoFactorAuthResult.appendChild(qrContainerDiv);
+
+    twoFactorAuthForm.classList.remove("hidden");
+
+    const encodedTOTPKeyInput = twoFactorAuthForm.querySelector("[name=encodedTOTPKey]") as HTMLInputElement;
+    if (encodedTOTPKeyInput) {
+        encodedTOTPKeyInput.value = data.encodedTOTPKey;
+    }
+});
+
+twoFactorAuthForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(twoFactorAuthForm);
+    const { data, error } = await (await authApiClient.api["two-factor-auth"].verify.$post({
+        form: {
+            encodedTOTPKey: formData.get("encodedTOTPKey") as string,
+            userProvidedCode: formData.get("userProvidedCode") as string,
+        },
+    })).json();
+    console.log(data, error);
+});
