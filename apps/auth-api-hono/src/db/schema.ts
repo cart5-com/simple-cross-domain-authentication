@@ -13,7 +13,7 @@ export const userTable = sqliteTable("user", {
 	twoFactorAuthKey: blob("two_factor_auth_key").$type<Uint8Array | null>(),
 
 	// use decryptToString to show the code
-	twoFactorAuthRecoveryCode: blob("two_factor_auth_recovery_code"),
+	twoFactorAuthRecoveryCode: blob("two_factor_auth_recovery_code").$type<Uint8Array | null>(),
 });
 
 export const sessionTable = sqliteTable("session", {
