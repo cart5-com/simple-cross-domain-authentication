@@ -43,7 +43,7 @@ export const twoFactorAuthRoute = new Hono<honoTypes>()
         }
     )
     .post(
-        '/verify',
+        '/save',
         zValidator('form', z.object({
             encodedTOTPKey: z.string().length(28, { message: "Invalid TOTP key length" }),
             userProvidedCode: z.string().length(6, { message: "TOTP code must be 6 digits" }),

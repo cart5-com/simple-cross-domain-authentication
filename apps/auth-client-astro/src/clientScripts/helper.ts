@@ -179,7 +179,7 @@ getNewTwoFactorAuthButton.addEventListener("click", async () => {
 twoFactorAuthForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = new FormData(twoFactorAuthForm);
-    const { data, error } = await (await authApiClient.api["two-factor-auth"].verify.$post({
+    const { data, error } = await (await authApiClient.api["two-factor-auth"].save.$post({
         form: {
             encodedTOTPKey: formData.get("encodedTOTPKey") as string,
             userProvidedCode: formData.get("userProvidedCode") as string,
