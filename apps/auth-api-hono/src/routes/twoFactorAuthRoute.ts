@@ -6,7 +6,12 @@ import { encodeBase64, decodeBase64 } from "@oslojs/encoding";
 import { createTOTPKeyURI, verifyTOTP } from "@oslojs/otp";
 import { renderSVG } from "uqr";
 import { KNOWN_ERROR } from '../errors';
-import { PUBLIC_DOMAIN_NAME } from '../consts';
+import { updateTwoFactorAuthKey, updateTwoFactorAuthRecoveryCode } from '../db/db-actions/userActions';
+import { generateRandomRecoveryCode } from '../utils/generateRandomOtp';
+import { encryptAesGcm, encryptString } from '../utils/encryption';
+import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
+
+const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
 
 export const twoFactorAuthRoute = new Hono<honoTypes>()
     .use(async (c, next) => {
@@ -30,7 +35,8 @@ export const twoFactorAuthRoute = new Hono<honoTypes>()
             return c.json({
                 data: {
                     qrCodeSVG: renderSVG(keyURI),
-                    encodedTOTPKey
+                    encodedTOTPKey,
+                    name: `auth.${PUBLIC_DOMAIN_NAME}: ${user.email}`,
                 },
                 error: null
             }, 200);
@@ -63,8 +69,16 @@ export const twoFactorAuthRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("Invalid TOTP code", "INVALID_TOTP");
             }
 
+            const encryptedKey = encryptAesGcm(key);
+            await updateTwoFactorAuthKey(user.id, encryptedKey);
+            const recoveryCode = generateRandomRecoveryCode();
+            const encryptedRecoveryCode = encryptString(recoveryCode);
+            await updateTwoFactorAuthRecoveryCode(user.id, encryptedRecoveryCode);
+
             return c.json({
-                data: "success",
+                data: {
+                    recoveryCode,
+                },
                 error: null
             }, 200);
         }

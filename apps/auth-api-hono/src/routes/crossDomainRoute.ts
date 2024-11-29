@@ -6,9 +6,11 @@ import { validateTurnstile } from '../utils/validateTurnstile';
 import { KNOWN_ERROR } from '../errors';
 import { isKnownHostname } from '../utils/knownHostnames';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
-import { CROSS_DOMAIN_SESSION_EXPIRES_IN, PUBLIC_DOMAIN_NAME } from '../consts';
+import { CROSS_DOMAIN_SESSION_EXPIRES_IN } from '../consts';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
+import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 
+const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
 /**
  * Cross domain authentication route handler
  * Handles authentication across different domains in a secure way

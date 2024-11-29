@@ -5,12 +5,13 @@ import { z } from 'zod';
 import { decodeIdToken, generateCodeVerifier, generateState, Google, OAuth2Tokens } from 'arctic';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
-import { GOOGLE_OAUTH_COOKIE_NAME, PUBLIC_DOMAIN_NAME } from '../consts';
+import { GOOGLE_OAUTH_COOKIE_NAME } from '../consts';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { KNOWN_ERROR } from '../errors';
 import { updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
 
+const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
 
 export const googleOAuthRoute = new Hono<honoTypes>()
     .get(

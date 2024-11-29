@@ -15,12 +15,40 @@ export async function upsertUser(email: string, passwordHash: string | null = nu
                 name: null,
                 passwordHash,
                 pictureUrl: null,
+                twoFactorAuthKey: null,
+                twoFactorAuthRecoveryCode: null,
             }).returning();
         existingUser = newUser[0];
     }
     return existingUser;
 }
 
+export async function updateTwoFactorAuthKey(userId: string, key: Uint8Array) {
+    await db.update(userTable).set({ twoFactorAuthKey: key }).where(eq(userTable.id, userId));
+}
+
+export async function getTwoFactorAuthKey(userId: string) {
+    const user = await db.select({
+        twoFactorAuthKey: userTable.twoFactorAuthKey
+    }).from(userTable).where(eq(userTable.id, userId));
+    return user[0]?.twoFactorAuthKey;
+}
+
+export async function updateTwoFactorAuthRecoveryCode(userId: string, code: Uint8Array) {
+    await db.update(userTable).set({ twoFactorAuthRecoveryCode: code }).where(eq(userTable.id, userId));
+}
+
+export async function getTwoFactorAuthRecoveryCode(userId: string) {
+    const user = await db.select({
+        twoFactorAuthRecoveryCode: userTable.twoFactorAuthRecoveryCode
+    }).from(userTable).where(eq(userTable.id, userId));
+    return user[0]?.twoFactorAuthRecoveryCode;
+}
+
+
+// TODO: remove updateRequiredFields function
+// revert back to old one, which was more easier to understand
+// use updateUserName, updateUserPictureUrl, markEmailAsVerified instead of 'updateRequiredFields'
 export async function updateRequiredFields(
     savedUserData: typeof userTable.$inferSelect,
     attributes: {

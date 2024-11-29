@@ -7,7 +7,9 @@ import { KNOWN_ERROR, type ErrorType } from '../errors';
 import { hashPassword, verifyPasswordHash, verifyPasswordStrength } from '../utils/password';
 import { getUserByEmail, isEmailExists, updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
-import { PUBLIC_DOMAIN_NAME } from '../consts';
+import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
+
+const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
 
 export const emailPasswordRoute = new Hono<honoTypes>()
     .use(async (c, next) => {
@@ -84,6 +86,11 @@ export const emailPasswordRoute = new Hono<honoTypes>()
             if (!user.isEmailVerified) {
                 // verify email with one time password authentication
                 throw new KNOWN_ERROR("OTP required", "OTP_REQUIRED");
+            }
+
+            if (user.twoFactorAuthKey) {
+                // TODO: set cookie for 10 minutes to save userId temporarily
+                throw new KNOWN_ERROR("Two factor authentication required", "TWO_FACTOR_AUTH_REQUIRED");
             }
 
             await createUserSessionAndSetCookie(c, user.id);

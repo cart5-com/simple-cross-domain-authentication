@@ -186,4 +186,9 @@ twoFactorAuthForm.addEventListener("submit", async (e) => {
         },
     })).json();
     console.log(data, error);
+    if (error) {
+        alert(JSON.stringify(error, null, 2));
+    } else if (data) {
+        twoFactorAuthResult.innerHTML = `Recovery code: ${data.recoveryCode}`;
+    }
 });

@@ -5,7 +5,7 @@ import { getEnvironmentVariable } from "./getEnvironmentVariable";
 
 const ENCRYPTION_KEY = decodeBase64(getEnvironmentVariable("ENCRYPTION_KEY"));
 
-function encryptHandler(data: Uint8Array): Uint8Array {
+export function encryptAesGcm(data: Uint8Array): Uint8Array {
 	const iv = new Uint8Array(16);
 	crypto.getRandomValues(iv);
 	const cipher = createCipheriv("aes-256-gcm", ENCRYPTION_KEY, iv);
@@ -17,11 +17,11 @@ function encryptHandler(data: Uint8Array): Uint8Array {
 	return encrypted.bytes();
 }
 
-function encryptString(data: string): Uint8Array {
-	return encryptHandler(new TextEncoder().encode(data));
+export function encryptString(data: string): Uint8Array {
+	return encryptAesGcm(new TextEncoder().encode(data));
 }
 
-function decryptHandler(encrypted: Uint8Array): Uint8Array {
+export function decryptAesGcm(encrypted: Uint8Array): Uint8Array {
 	if (encrypted.byteLength < 33) {
 		throw new Error("Invalid data");
 	}
@@ -33,8 +33,8 @@ function decryptHandler(encrypted: Uint8Array): Uint8Array {
 	return decrypted.bytes();
 }
 
-function decryptToString(data: Uint8Array): string {
-	return new TextDecoder().decode(decryptHandler(data));
+export function decryptToString(data: Uint8Array): string {
+	return new TextDecoder().decode(decryptAesGcm(data));
 }
 
 export function encrypt(data: string): string {

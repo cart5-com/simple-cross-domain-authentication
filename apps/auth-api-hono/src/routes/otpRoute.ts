@@ -4,13 +4,16 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { generateRandomOTP } from '../utils/generateRandomOtp';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
-import { OTP_COOKIE_NAME, PUBLIC_DOMAIN_NAME } from '../consts';
+import { OTP_COOKIE_NAME } from '../consts';
 import { sendUserOtpEmail } from '../utils/email';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { KNOWN_ERROR } from '../errors';
 import { updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
+import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
+
+const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
 
 export const otpRoute = new Hono<honoTypes>()
     .use(async (c, next) => {
@@ -85,6 +88,11 @@ export const otpRoute = new Hono<honoTypes>()
                 pictureUrl: null,
                 isEmailVerified: true // set email as verified after email OTP verification
             });
+
+            if (user.twoFactorAuthKey) {
+                // TODO: set cookie for 10 minutes to save userId temporarily
+                throw new KNOWN_ERROR("Two factor authentication required", "TWO_FACTOR_AUTH_REQUIRED");
+            }
             await createUserSessionAndSetCookie(c, user.id);
 
             return c.json({
