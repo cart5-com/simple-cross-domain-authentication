@@ -1,62 +1,48 @@
+import { decodeBase64, encodeBase64 } from "@oslojs/encoding";  // Make sure encodeBase64 is imported
+import { createCipheriv, createDecipheriv } from "crypto";
+import { DynamicBuffer } from "@oslojs/binary";
 import { getEnvironmentVariable } from "./getEnvironmentVariable";
-const key = getEnvironmentVariable("ENCRYPTION_KEY");
 
-const IV_LENGTH = 16;
+const ENCRYPTION_KEY = decodeBase64(getEnvironmentVariable("ENCRYPTION_KEY"));
 
-async function importKeyFromBase64(base64Key: string): Promise<CryptoKey> {
-	const rawKey = base64ToUint8Array(base64Key);
-	if (rawKey.length !== 32) {
-		throw new Error('Key must be exactly 32 bytes (256 bits)');
-	}
-	return await crypto.subtle.importKey(
-		'raw',
-		rawKey,
-		'AES-CTR',
-		true,
-		['encrypt', 'decrypt']
-	);
-}
-export const encrypt = async (text: string, base64Key: string): Promise<string> => {
-	const key = await importKeyFromBase64(base64Key);
-	const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
-
-	const encodedText = new TextEncoder().encode(text);
-	const encryptedBuffer = await crypto.subtle.encrypt(
-		{ name: 'AES-CTR', counter: iv, length: 64 },
-		key,
-		encodedText
-	);
-
-	const result = new Uint8Array(iv.length + encryptedBuffer.byteLength);
-	result.set(iv, 0);
-	result.set(new Uint8Array(encryptedBuffer), iv.length);
-
-	return uint8ArrayToBase64(result);
-};
-
-export const decrypt = async (encryptedText: string, base64Key: string): Promise<string> => {
-	if (!encryptedText) {
-		throw new Error('No encrypted text provided');
-	}
-	const encryptedArray = base64ToUint8Array(encryptedText);
-	const iv = encryptedArray.slice(0, IV_LENGTH);
-	const data = encryptedArray.slice(IV_LENGTH);
-
-	const key = await importKeyFromBase64(base64Key);
-	const decryptedBuffer = await crypto.subtle.decrypt(
-		{ name: 'AES-CTR', counter: iv, length: 64 },
-		key,
-		data
-	);
-
-	return new TextDecoder().decode(decryptedBuffer);
-};
-
-function uint8ArrayToBase64(array: Uint8Array): string {
-	return btoa(String.fromCharCode.apply(null, array as unknown as number[]));
+function encryptHandler(data: Uint8Array): Uint8Array {
+	const iv = new Uint8Array(16);
+	crypto.getRandomValues(iv);
+	const cipher = createCipheriv("aes-256-gcm", ENCRYPTION_KEY, iv);
+	const encrypted = new DynamicBuffer(0);
+	encrypted.write(iv);
+	encrypted.write(cipher.update(data));
+	encrypted.write(cipher.final());
+	encrypted.write(cipher.getAuthTag());
+	return encrypted.bytes();
 }
 
-function base64ToUint8Array(base64: string): Uint8Array {
-	const binaryString = atob(base64);
-	return new Uint8Array(binaryString.length).map((_, i) => binaryString.charCodeAt(i));
+function encryptString(data: string): Uint8Array {
+	return encryptHandler(new TextEncoder().encode(data));
+}
+
+function decryptHandler(encrypted: Uint8Array): Uint8Array {
+	if (encrypted.byteLength < 33) {
+		throw new Error("Invalid data");
+	}
+	const decipher = createDecipheriv("aes-256-gcm", ENCRYPTION_KEY, encrypted.slice(0, 16));
+	decipher.setAuthTag(encrypted.slice(encrypted.byteLength - 16));
+	const decrypted = new DynamicBuffer(0);
+	decrypted.write(decipher.update(encrypted.slice(16, encrypted.byteLength - 16)));
+	decrypted.write(decipher.final());
+	return decrypted.bytes();
+}
+
+function decryptToString(data: Uint8Array): string {
+	return new TextDecoder().decode(decryptHandler(data));
+}
+
+export function encrypt(data: string): string {
+	const encrypted = encryptString(data);
+	return encodeBase64(encrypted);
+}
+
+export function decrypt(data: string): string {
+	const encryptedBytes = decodeBase64(data);
+	return decryptToString(encryptedBytes);
 }

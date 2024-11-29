@@ -6,9 +6,8 @@ import { validateTurnstile } from '../utils/validateTurnstile';
 import { KNOWN_ERROR } from '../errors';
 import { isKnownHostname } from '../utils/knownHostnames';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
-import { CROSS_DOMAIN_SESSION_EXPIRES_IN } from '../consts';
+import { CROSS_DOMAIN_SESSION_EXPIRES_IN, PUBLIC_DOMAIN_NAME } from '../consts';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
-import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 
 /**
  * Cross domain authentication route handler
@@ -40,7 +39,7 @@ export const crossDomainRoute = new Hono<honoTypes>()
             if (!refererHeader) {
                 throw new KNOWN_ERROR("Referer header not found", "REFERRER_HEADER_NOT_FOUND");
             }
-            if (!refererHeader.startsWith(`https://auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`)) {
+            if (!refererHeader.startsWith(`https://auth.${PUBLIC_DOMAIN_NAME}`)) {
                 throw new KNOWN_ERROR("Invalid referer header", "INVALID_REFERER_HEADER");
             }
 
@@ -66,9 +65,7 @@ export const crossDomainRoute = new Hono<honoTypes>()
             };
             // Create encrypted JWT containing session info
             const code = await signJwtAndEncrypt<CrossDomainCodePayload>(
-                payload,
-                getEnvironmentVariable("JWT_SECRET"),
-                getEnvironmentVariable("ENCRYPTION_KEY"),
+                payload
             );
 
             // Redirect to callback URL on target domain
@@ -95,12 +92,10 @@ export const crossDomainRoute = new Hono<honoTypes>()
                 sourceHost,
                 targetHost
             } = await decryptAndVerifyJwt<CrossDomainCodePayload>(
-                query.code,
-                getEnvironmentVariable("JWT_SECRET"),
-                getEnvironmentVariable("ENCRYPTION_KEY")
+                query.code
             );
 
-            if (sourceHost !== (`auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`)) {
+            if (sourceHost !== (`auth.${PUBLIC_DOMAIN_NAME}`)) {
                 throw new KNOWN_ERROR("Invalid source host", "INVALID_SOURCE_HOST");
             }
 

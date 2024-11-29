@@ -2,19 +2,19 @@ import { Hono } from 'hono'
 import type { honoTypes } from '../index'
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { KNOWN_ERROR, type ErrorType } from '../errors';
 import { hashPassword, verifyPasswordHash, verifyPasswordStrength } from '../utils/password';
 import { getUserByEmail, isEmailExists, updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
+import { PUBLIC_DOMAIN_NAME } from '../consts';
 
 export const emailPasswordRoute = new Hono<honoTypes>()
     .use(async (c, next) => {
         // const referer = c.req.header('referer');
         // const host = c.req.header('host');
         const origin = c.req.header('origin');
-        if (origin !== `https://auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`) {
+        if (origin !== `https://auth.${PUBLIC_DOMAIN_NAME}`) {
             throw new KNOWN_ERROR("Invalid origin", "INVALID_ORIGIN");
         }
         await next();

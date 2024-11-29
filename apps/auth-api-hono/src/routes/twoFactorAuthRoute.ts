@@ -6,12 +6,12 @@ import { encodeBase64, decodeBase64 } from "@oslojs/encoding";
 import { createTOTPKeyURI, verifyTOTP } from "@oslojs/otp";
 import { renderSVG } from "uqr";
 import { KNOWN_ERROR } from '../errors';
-import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
+import { PUBLIC_DOMAIN_NAME } from '../consts';
 
 export const twoFactorAuthRoute = new Hono<honoTypes>()
     .use(async (c, next) => {
         const origin = c.req.header('origin');
-        if (origin !== `https://auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`) {
+        if (origin !== `https://auth.${PUBLIC_DOMAIN_NAME}`) {
             throw new KNOWN_ERROR("Invalid origin", "INVALID_ORIGIN");
         }
         await next();
@@ -26,7 +26,7 @@ export const twoFactorAuthRoute = new Hono<honoTypes>()
             const totpKey = new Uint8Array(20);
             crypto.getRandomValues(totpKey);
             const encodedTOTPKey = encodeBase64(totpKey);
-            const keyURI = createTOTPKeyURI(`auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`, user.email, totpKey, 30, 6);
+            const keyURI = createTOTPKeyURI(`auth.${PUBLIC_DOMAIN_NAME}`, user.email, totpKey, 30, 6);
             return c.json({
                 data: {
                     qrCodeSVG: renderSVG(keyURI),

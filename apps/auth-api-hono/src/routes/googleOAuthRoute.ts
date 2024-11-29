@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { decodeIdToken, generateCodeVerifier, generateState, Google, OAuth2Tokens } from 'arctic';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
-import { GOOGLE_OAUTH_COOKIE_NAME } from '../consts';
+import { GOOGLE_OAUTH_COOKIE_NAME, PUBLIC_DOMAIN_NAME } from '../consts';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { KNOWN_ERROR } from '../errors';
 import { updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
@@ -25,7 +25,7 @@ export const googleOAuthRoute = new Hono<honoTypes>()
             if (!hostHeader) {
                 throw new KNOWN_ERROR("Host header not found", "HOST_HEADER_NOT_FOUND");
             }
-            if (hostHeader !== `auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`) {
+            if (hostHeader !== `auth.${PUBLIC_DOMAIN_NAME}`) {
                 throw new KNOWN_ERROR("Invalid host", "INVALID_HOST");
             }
 
@@ -33,7 +33,7 @@ export const googleOAuthRoute = new Hono<honoTypes>()
             if (!refererHeader) {
                 throw new KNOWN_ERROR("Referer header not found", "REFERRER_HEADER_NOT_FOUND");
             }
-            if (!refererHeader.startsWith(`https://auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`)) {
+            if (!refererHeader.startsWith(`https://auth.${PUBLIC_DOMAIN_NAME}`)) {
                 throw new KNOWN_ERROR("Invalid referer header", "INVALID_REFERER_HEADER");
             }
 
@@ -44,9 +44,7 @@ export const googleOAuthRoute = new Hono<honoTypes>()
                     storedState,
                     storedCodeVerifier,
                     redirect_uri: decodeURIComponent(redirect_uri)
-                },
-                getEnvironmentVariable("JWT_SECRET"),
-                getEnvironmentVariable("ENCRYPTION_KEY")
+                }
             );
 
             setCookie(c, GOOGLE_OAUTH_COOKIE_NAME, google_oauth_token, {
@@ -87,7 +85,7 @@ export const googleOAuthRoute = new Hono<honoTypes>()
             if (!hostHeader) {
                 throw new KNOWN_ERROR("Host header not found", "HOST_HEADER_NOT_FOUND");
             }
-            if (hostHeader !== `auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`) {
+            if (hostHeader !== `auth.${PUBLIC_DOMAIN_NAME}`) {
                 throw new KNOWN_ERROR("Invalid host", "INVALID_HOST");
             }
 
@@ -102,9 +100,7 @@ export const googleOAuthRoute = new Hono<honoTypes>()
             }
 
             const { storedState, storedCodeVerifier, redirect_uri } = await decryptAndVerifyJwt<GoogleOAuthTokenPayload>(
-                google_oauth_token,
-                getEnvironmentVariable("JWT_SECRET"),
-                getEnvironmentVariable("ENCRYPTION_KEY")
+                google_oauth_token
             );
             if (!storedState || !storedCodeVerifier || !redirect_uri) {
                 throw new KNOWN_ERROR("Expired or invalid", "EXPIRED_OR_INVALID_GOOGLE_OAUTH_TOKEN");

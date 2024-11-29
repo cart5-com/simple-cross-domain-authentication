@@ -1,4 +1,6 @@
+import { getEnvironmentVariable } from "./utils/getEnvironmentVariable";
 
+export const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
 export const SESSION_COOKIE_NAME = `auth_session`;
 export const GOOGLE_OAUTH_COOKIE_NAME = `google_oauth_token`;
 export const OTP_COOKIE_NAME = "otp_token";

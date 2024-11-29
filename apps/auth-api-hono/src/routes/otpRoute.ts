@@ -4,8 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { generateRandomOTP } from '../utils/generateRandomOtp';
 import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
-import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
-import { OTP_COOKIE_NAME } from '../consts';
+import { OTP_COOKIE_NAME, PUBLIC_DOMAIN_NAME } from '../consts';
 import { sendUserOtpEmail } from '../utils/email';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
@@ -18,7 +17,7 @@ export const otpRoute = new Hono<honoTypes>()
         // const referer = c.req.header('referer');
         // const host = c.req.header('host');
         const origin = c.req.header('origin');
-        if (origin !== `https://auth.${getEnvironmentVariable("PUBLIC_DOMAIN_NAME")}`) {
+        if (origin !== `https://auth.${PUBLIC_DOMAIN_NAME}`) {
             throw new KNOWN_ERROR("Invalid origin", "INVALID_ORIGIN");
         }
         await next();
@@ -38,9 +37,7 @@ export const otpRoute = new Hono<honoTypes>()
                 {
                     email: verifyEmail,
                     otp,
-                },
-                getEnvironmentVariable("JWT_SECRET"),
-                getEnvironmentVariable("ENCRYPTION_KEY")
+                }
             );
 
             setCookie(c, OTP_COOKIE_NAME, otpToken, {
@@ -76,9 +73,7 @@ export const otpRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("Invalid or expired OTP", "INVALID_OTP");
             }
             const { email, otp } = await decryptAndVerifyJwt<OtpTokenPayload>(
-                otpToken,
-                getEnvironmentVariable("JWT_SECRET"),
-                getEnvironmentVariable("ENCRYPTION_KEY")
+                otpToken
             );
             if (verifyEmail.toUpperCase() !== email.toUpperCase() || otp.toUpperCase() !== code.toUpperCase()) {
                 throw new KNOWN_ERROR("Invalid OTP", "INVALID_OTP");
