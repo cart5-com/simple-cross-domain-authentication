@@ -114,9 +114,9 @@ export const twoFactorAuthRoute = new Hono<honoTypes>()
             }
             if (!user.twoFactorAuthKey) {
                 // no need to throw error here, as it's not expected to happen
-                // throw new KNOWN_ERROR("Two factor authentication not enabled", "TWO_FACTOR_AUTH_NOT_ENABLED");
+                throw new KNOWN_ERROR("UNKNOWN_ERROR", "UNKNOWN_ERROR");
             }
-            if (!verifyTOTP(decryptAesGcm(user.twoFactorAuthKey as Uint8Array), 30, 6, userProvidedCode)) {
+            if (!verifyTOTP(decryptAesGcm(user.twoFactorAuthKey), 30, 6, userProvidedCode)) {
                 throw new KNOWN_ERROR("Invalid TOTP code", "INVALID_TOTP");
             }
 

@@ -10,7 +10,7 @@ export const userTable = sqliteTable("user", {
 	pictureUrl: text("picture_url"),
 
 
-	twoFactorAuthKey: blob("two_factor_auth_key"),
+	twoFactorAuthKey: blob("two_factor_auth_key").$type<Uint8Array | null>(),
 
 	// use decryptToString to show the code
 	twoFactorAuthRecoveryCode: blob("two_factor_auth_recovery_code"),
