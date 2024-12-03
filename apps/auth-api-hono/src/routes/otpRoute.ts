@@ -9,7 +9,7 @@ import { sendUserOtpEmail } from '../utils/email';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { KNOWN_ERROR } from '../errors';
-import { updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
+import { markEmailAsVerified, updateUserName, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 import type { TwoFactorAuthVerifyPayload } from '../types/UserType';
@@ -84,11 +84,13 @@ export const otpRoute = new Hono<honoTypes>()
             }
 
             const user = await upsertUser(email);
-            await updateRequiredFields(user, {
-                name: email.split('@')[0],
-                pictureUrl: null,
-                isEmailVerified: true // set email as verified after email OTP verification
-            });
+
+            if (!user.isEmailVerified) {
+                await markEmailAsVerified(email);
+            }
+            if (user.name === null) {
+                await updateUserName(user.id, email.split('@')[0]);
+            }
 
             if (user.encryptedTwoFactorAuthKey) {
                 const twoFactorAuthToken = await signJwtAndEncrypt<TwoFactorAuthVerifyPayload>(

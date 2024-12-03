@@ -8,7 +8,7 @@ import { decryptAndVerifyJwt, signJwtAndEncrypt } from '../utils/jwt';
 import { GOOGLE_OAUTH_COOKIE_NAME } from '../consts';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { KNOWN_ERROR } from '../errors';
-import { updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
+import { markEmailAsVerified, updateUserName, updateUserPictureUrl, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
 
 const PUBLIC_DOMAIN_NAME = getEnvironmentVariable("PUBLIC_DOMAIN_NAME");
@@ -113,11 +113,19 @@ export const googleOAuthRoute = new Hono<honoTypes>()
             const googleOAuthUser = await validateAuthorizationCode(code, storedCodeVerifier);
 
             const user = await upsertUser(googleOAuthUser.email);
-            await updateRequiredFields(user, {
-                name: googleOAuthUser.name,
-                pictureUrl: googleOAuthUser.picture,
-                isEmailVerified: true // set email as verified
-            });
+            // if email is not verified, mark it as verified
+            if (!user.isEmailVerified) {
+                await markEmailAsVerified(googleOAuthUser.email);
+            }
+            // update name only if it is null
+            if (user.name === null && googleOAuthUser.name) {
+                await updateUserName(user.id, googleOAuthUser.name);
+            }
+            // update picture only if it is different
+            if (googleOAuthUser.picture && googleOAuthUser.picture !== user.pictureUrl) {
+                await updateUserPictureUrl(user.id, googleOAuthUser.picture);
+            }
+
             await createUserSessionAndSetCookie(c, user.id);
 
             return c.redirect(redirect_uri.toString());

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { validateTurnstile } from '../utils/validateTurnstile';
 import { KNOWN_ERROR, type ErrorType } from '../errors';
 import { hashPassword, verifyPasswordHash, verifyPasswordStrength } from '../utils/password';
-import { getUserByEmail, isEmailExists, updateRequiredFields, upsertUser } from '../db/db-actions/userActions';
+import { getUserByEmail, isEmailExists, updateUserName, upsertUser } from '../db/db-actions/userActions';
 import { createUserSessionAndSetCookie } from '../db/db-actions/createSession';
 import { getEnvironmentVariable } from '../utils/getEnvironmentVariable';
 import { signJwtAndEncrypt } from '../utils/jwt';
@@ -50,11 +50,7 @@ export const emailPasswordRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("Email already registered", "EMAIL_ALREADY_REGISTERED");
             }
             const user = await upsertUser(email, await hashPassword(password));
-            await updateRequiredFields(user, {
-                name: name,
-                pictureUrl: null,
-                isEmailVerified: false // set email as not verified, this is only a registration without email verification.
-            });
+            await updateUserName(user.id, name);
             // verify email with one time password authentication
             throw new KNOWN_ERROR("OTP required", "OTP_REQUIRED");
             return c.json({
