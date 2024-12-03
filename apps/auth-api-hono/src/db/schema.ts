@@ -10,10 +10,10 @@ export const userTable = sqliteTable("user", {
 	pictureUrl: text("picture_url"),
 
 
-	twoFactorAuthKey: blob("two_factor_auth_key").$type<Uint8Array | null>(),
+	encryptedTwoFactorAuthKey: blob("encrypted_two_factor_auth_key").$type<Uint8Array | null>(),
 
 	// use decryptToString to show the code
-	twoFactorAuthRecoveryCode: blob("two_factor_auth_recovery_code").$type<Uint8Array | null>(),
+	encryptedTwoFactorAuthRecoveryCode: blob("encrypted_two_factor_auth_recovery_code").$type<Uint8Array | null>(),
 });
 
 export const sessionTable = sqliteTable("session", {

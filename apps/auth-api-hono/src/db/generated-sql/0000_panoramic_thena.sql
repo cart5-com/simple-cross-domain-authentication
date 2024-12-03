@@ -12,7 +12,9 @@ CREATE TABLE `user` (
 	`is_email_verified` integer DEFAULT false NOT NULL,
 	`name` text,
 	`password_hash` text,
-	`picture_url` text
+	`picture_url` text,
+	`encrypted_two_factor_auth_key` blob,
+	`encrypted_two_factor_auth_recovery_code` blob
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `user_email_unique` ON `user` (`email`);

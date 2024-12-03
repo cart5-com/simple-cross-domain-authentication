@@ -92,7 +92,7 @@ export const emailPasswordRoute = new Hono<honoTypes>()
                 throw new KNOWN_ERROR("OTP required", "OTP_REQUIRED");
             }
 
-            if (user.twoFactorAuthKey) {
+            if (user.encryptedTwoFactorAuthKey) {
                 const twoFactorAuthToken = await signJwtAndEncrypt<TwoFactorAuthVerifyPayload>(
                     {
                         userId: user.id,

@@ -132,6 +132,7 @@ const whoAmI = async () => {
         googleOAuthButton.classList.add("hidden");
         getNewTwoFactorAuthButton.classList.remove("hidden");
         twoFactorVerifyForm.classList.add("hidden");
+        twoFactorResetCodeForm.classList.add("hidden");
     } else {
         logoutButton.classList.add("hidden");
         otpForm.classList.remove("hidden");
@@ -140,6 +141,7 @@ const whoAmI = async () => {
         googleOAuthButton.classList.remove("hidden");
         getNewTwoFactorAuthButton.classList.add("hidden");
         twoFactorVerifyForm.classList.remove("hidden");
+        twoFactorResetCodeForm.classList.remove("hidden");
     }
 }
 
@@ -211,4 +213,23 @@ twoFactorVerifyForm.addEventListener("submit", async (e) => {
     } else {
         whoAmI();
     }
+});
+
+const twoFactorResetCodeForm = document.getElementById("two-factor-reset-code-form") as HTMLFormElement;
+twoFactorResetCodeForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(twoFactorResetCodeForm);
+    const { data, error } = await (await authApiClient.api["two-factor-auth"]['remove-2fa-with-recovery-code'].$post({
+        form: {
+            recoveryCode: formData.get("recoveryCode") as string,
+            turnstile: await showTurnstile(import.meta.env.PUBLIC_TURNSTILE_SITE_KEY)
+        },
+    })).json();
+    console.log(data, error);
+    if (error) {
+        alert(JSON.stringify(error, null, 2));
+    } else {
+        whoAmI();
+    }
+
 });

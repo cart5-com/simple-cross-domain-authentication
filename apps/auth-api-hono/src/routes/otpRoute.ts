@@ -90,7 +90,7 @@ export const otpRoute = new Hono<honoTypes>()
                 isEmailVerified: true // set email as verified after email OTP verification
             });
 
-            if (user.twoFactorAuthKey) {
+            if (user.encryptedTwoFactorAuthKey) {
                 const twoFactorAuthToken = await signJwtAndEncrypt<TwoFactorAuthVerifyPayload>(
                     {
                         userId: user.id,

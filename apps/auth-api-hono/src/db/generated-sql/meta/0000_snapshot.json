@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "b47d25ab-938c-471b-ba5a-b3ffeb03990f",
+  "id": "7208dc86-092f-4e57-8618-05dc0c3e944c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "session": {
@@ -98,6 +98,20 @@
         "picture_url": {
           "name": "picture_url",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "encrypted_two_factor_auth_key": {
+          "name": "encrypted_two_factor_auth_key",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "encrypted_two_factor_auth_recovery_code": {
+          "name": "encrypted_two_factor_auth_recovery_code",
+          "type": "blob",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

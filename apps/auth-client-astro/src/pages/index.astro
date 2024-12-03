@@ -68,11 +68,19 @@
 		</form>
 		<hr />
 		<form id="two-factor-auth-form" class="hidden">
+			<h2>Two factor auth form</h2>
 			<input type="text" name="encodedTOTPKey" />
 			<br />
 			<input type="text" name="userProvidedCode" />
 			<br />
 			<button type="submit">Verify</button>
+		</form>
+		<hr />
+		<form id="two-factor-reset-code-form" class="hidden">
+			<h2>Two factor reset code form</h2>
+			<input type="text" name="recoveryCode" />
+			<br />
+			<button type="submit">Reset</button>
 		</form>
 		<hr />
 		<button class="hidden" id="logout-button">Logout</button>

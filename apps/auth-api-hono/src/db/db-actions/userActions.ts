@@ -15,34 +15,34 @@ export async function upsertUser(email: string, passwordHash: string | null = nu
                 name: null,
                 passwordHash,
                 pictureUrl: null,
-                twoFactorAuthKey: null,
-                twoFactorAuthRecoveryCode: null,
+                encryptedTwoFactorAuthKey: null,
+                encryptedTwoFactorAuthRecoveryCode: null,
             }).returning();
         existingUser = newUser[0];
     }
     return existingUser;
 }
 
-export async function updateTwoFactorAuthKey(userId: string, key: Uint8Array) {
-    await db.update(userTable).set({ twoFactorAuthKey: key }).where(eq(userTable.id, userId));
+export async function updateEncryptedTwoFactorAuthKey(userId: string, encryptedKey: Uint8Array | null) {
+    await db.update(userTable).set({ encryptedTwoFactorAuthKey: encryptedKey }).where(eq(userTable.id, userId));
 }
 
-export async function getTwoFactorAuthKey(userId: string) {
+export async function getEncryptedTwoFactorAuthKey(userId: string) {
     const user = await db.select({
-        twoFactorAuthKey: userTable.twoFactorAuthKey
+        encryptedTwoFactorAuthKey: userTable.encryptedTwoFactorAuthKey
     }).from(userTable).where(eq(userTable.id, userId));
-    return user[0]?.twoFactorAuthKey;
+    return user[0]?.encryptedTwoFactorAuthKey;
 }
 
-export async function updateTwoFactorAuthRecoveryCode(userId: string, code: Uint8Array) {
-    await db.update(userTable).set({ twoFactorAuthRecoveryCode: code }).where(eq(userTable.id, userId));
+export async function updateEncryptedTwoFactorAuthRecoveryCode(userId: string, encryptedCode: Uint8Array | null) {
+    await db.update(userTable).set({ encryptedTwoFactorAuthRecoveryCode: encryptedCode }).where(eq(userTable.id, userId));
 }
 
 export async function getTwoFactorAuthRecoveryCode(userId: string) {
     const user = await db.select({
-        twoFactorAuthRecoveryCode: userTable.twoFactorAuthRecoveryCode
+        encryptedTwoFactorAuthRecoveryCode: userTable.encryptedTwoFactorAuthRecoveryCode
     }).from(userTable).where(eq(userTable.id, userId));
-    return user[0]?.twoFactorAuthRecoveryCode;
+    return user[0]?.encryptedTwoFactorAuthRecoveryCode;
 }
 
 
