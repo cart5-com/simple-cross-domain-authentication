@@ -99,4 +99,4 @@ pnpm dev
 - ✅ One-time password authentication
 - ✅ Email/password authentication
 - ✅ Google OAuth integration
-- [ ] Two-factor authentication (2FA)
+- ✅ Two-factor authentication (2FA) and reset with a recovery code
