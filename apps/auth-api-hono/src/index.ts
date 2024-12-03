@@ -33,7 +33,6 @@ app.onError((err, c) => {
 	if (err instanceof KNOWN_ERROR) {
 		console.log("KNOWN_ERROR err:");
 		console.log(err);
-		// TODO: add sentry
 		c.error = undefined;
 		return c.json({
 			error: {

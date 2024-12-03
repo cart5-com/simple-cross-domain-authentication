@@ -1,4 +1,4 @@
-import { getCookie, setCookie } from "hono/cookie";
+import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { SESSION_COOKIE_NAME } from "../consts";
 import { validateSessionCookie } from "../db/db-actions/validateSessionCookie";
@@ -22,14 +22,7 @@ export const authChecks = createMiddleware(async (c, next) => {
             });
         }
         if (!session) {
-            // TODO: maybe we can use deleteCookie here
-            setCookie(c, SESSION_COOKIE_NAME, "", {
-                path: "/",
-                secure: true, // using https in dev with caddy
-                httpOnly: true,
-                sameSite: "strict",
-                maxAge: 0,
-            });
+            deleteCookie(c, SESSION_COOKIE_NAME);
         }
         c.set("SESSION", session);
         c.set("USER", user);
