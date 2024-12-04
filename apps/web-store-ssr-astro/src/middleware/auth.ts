@@ -29,16 +29,23 @@ export const authMiddleware = defineMiddleware(async (context, next) => {
 });
 
 async function fetchWhoAmI(context: APIContext) {
-    const authApiClient = createAuthApiClient(`${context.url.origin}/__p_auth/`);
+    // const authApiClient = createAuthApiClient(`${context.url.origin}/__p_auth/`);
+
+    // use direct connection for auth check,
+    // no need to go through network
+    console.log('AUTH_API_ORIGIN:', import.meta.env.AUTH_API_ORIGIN);
+    const authApiClient = createAuthApiClient(import.meta.env.AUTH_API_ORIGIN);
     const whoamiUrl = await authApiClient.api.user.whoami.$url();
     const authCookieValue = context.cookies.get(AUTH_SESSION_COOKIE_NAME)?.value;
-    whoamiUrl.protocol = "https";
-    if (import.meta.env.DEV) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    }
+    // whoamiUrl.protocol = "https";
+    // if (import.meta.env.DEV) {
+    //     process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    // }
     const whoamiResponse = await fetch(whoamiUrl.toString(), {
         method: "POST",
         headers: {
+            internalHost: context.url.host,
+            internalSecret: import.meta.env.JWT_SECRET,
             origin: context.url.origin,
             cookie: `${AUTH_SESSION_COOKIE_NAME}=${authCookieValue}`
         }
