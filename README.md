@@ -6,9 +6,11 @@ This is a monorepo for a simple cross-domain authentication example.
 ## Features
 
 - ✅ Cross-domain authentication
-- ✅ One-time password (OTP) authentication
 - ✅ Cloudflare Turnstile integration
-- ✅ Email verification
+- ✅ One-time-code email authentication
+- ✅ Email/password authentication
+- ✅ Google OAuth integration
+- ✅ Two-factor authentication (2FA) and reset with a recovery code
 
 ## Basic Flow for cross-domain auth
 
@@ -93,10 +95,3 @@ pnpm dev
 ```
 
 4. Access the demo store at https://sample-store-1.com
-
-## Roadmap
-
-- ✅ One-time password authentication
-- ✅ Email/password authentication
-- ✅ Google OAuth integration
-- ✅ Two-factor authentication (2FA) and reset with a recovery code
