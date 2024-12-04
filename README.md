@@ -25,8 +25,7 @@ This is a monorepo for a simple cross-domain authentication example.
    - After successful login, initiates cross-domain auth process
 
 3. Cross-Domain Authentication
-   - Creates temporary session
-   - Encrypts session data
+   - Encrypts user data
    - Redirects back to store with encrypted data
    - Store website validates and creates its own session
 
@@ -35,8 +34,8 @@ This is a monorepo for a simple cross-domain authentication example.
 1. User enters email and completes Turnstile verification
 
    - System generates OTP
-   - Encrypts OTP and email into JWT token
-   - Stores token in **HTTP-only cookie**
+   - Generated OTP and email into JWT token with expiration time
+   - Encrypts JWT token and stores in **HTTP-only cookie**
    - Sends OTP to user's email
 
 2. User enters received OTP code
