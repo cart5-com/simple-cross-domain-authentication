@@ -16,6 +16,7 @@
 		"@node-rs/argon2": "^2.0.0",
 		"@oslojs/binary": "^1.0.0",
 		"@oslojs/crypto": "^0.6.0",
+		"lib": "workspace:*",
 		"@oslojs/encoding": "1.1.0",
 		"@oslojs/otp": "^1.0.0",
 		"@types/node": "^22.9.1",

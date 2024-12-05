@@ -1,5 +1,5 @@
 import { createMiddleware } from "hono/factory";
-import { verifyRequestOrigin } from "../utils/requestCheck";
+import { verifyRequestOrigin } from "lib/utils/verifyRequestOrigin";
 import { getEnvironmentVariable } from "../utils/getEnvironmentVariable";
 
 export const csrfChecks = createMiddleware(async (c, next) => {
